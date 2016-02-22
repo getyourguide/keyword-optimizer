@@ -544,17 +544,19 @@ public class KeywordOptimizer {
   }
 
   /**
-   * Outputs the results on the console.
+   * Outputs the results on the console (sorted, best first).
    *
    * @param bestKeywords the optimized set of keywords
    */
   private static void outputConsole(KeywordCollection bestKeywords) {
     logHeadline("Results");
-    log(bestKeywords.toString());
+    for (KeywordInfo keyword : bestKeywords.getListSortedByScore()) {
+      log(keyword.toString());
+    }
   }
 
   /**
-   * Outputs the results as a csv file.
+   * Outputs the results as a csv file (sorted, best first).
    *
    * @param cmdLine the parsed command line parameters
    * @param bestKeywords the optimized set of keywords
@@ -570,7 +572,7 @@ public class KeywordOptimizer {
       PrintStream printer = new PrintStream(cmdLine.getOptionValue("of"));
       printer.println(CSV_JOINER.join(CSV_HEADERS));
 
-      for (KeywordInfo eval : bestKeywords) {
+      for (KeywordInfo eval : bestKeywords.getListSortedByScore()) {
         TrafficEstimate estimate = eval.getEstimate();
         Object[] rowData = {
           eval.getKeyword().getText(),
