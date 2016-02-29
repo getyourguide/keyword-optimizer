@@ -8,6 +8,15 @@ The AdWords API changes frequently; current versions are being sunset about
 6-8 months after their introduction. Please make sure to upgrade your project
 around that timeframe.
 
+Please keep in mind: This tool uses the [TargetingIdeaService](https://developers.google.com/adwords/api/docs/guides/targeting-idea-service)
+and [TrafficEstimatorService](https://developers.google.com/adwords/api/docs/guides/traffic-estimator-service)
+of the AdWords API. If you expose this tool directly to your clients, [the
+complete set of required minimum functionality might apply to your application](https://developers.google.com/adwords/api/docs/requirements#requirements-for-api-clients-providing-targeting-idea-service-or-trafficestimation-service).
+
+This tool provides estimations only, the real performance of your ads might
+differ substantially. Please make sure you understand the [limitations of our
+keyword planning tools](https://support.google.com/adwords/answer/3022575).
+
 Please let us know if you run into issues in the [project's issue tracker](https://github.com/googleads/keyword-optimizer/issues).
 This beta release may not fit your needs for production environments. We are
 constantly working on improving the project; your feedback is very important

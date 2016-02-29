@@ -236,7 +236,7 @@ public class KeywordOptimizerUtil {
   }
 
   /**
-   * Formats a given number in a default format (3 decimals, padded left to 10 characters)..
+   * Formats a given number in a default format (3 decimals, padded left to 10 characters).
    * 
    * @param nr a number
    * @return a string version of the number
@@ -250,7 +250,7 @@ public class KeywordOptimizerUtil {
   }
 
   /**
-   * Formats a given number in a default format (3 decimals, padded left to 10 characters)..
+   * Formats a given number in a default format (3 decimals, padded left to 10 characters).
    * 
    * @param nr a number
    * @return a string version of the number
@@ -261,6 +261,20 @@ public class KeywordOptimizerUtil {
     }
 
     return String.format(FORMAT_NUMBER, nr);
+  }
+  
+  /**
+   * Formats a given number for CSV output (effectively handles null values).
+   * 
+   * @param nr a number
+   * @return a string version of the number
+   */
+  public static String formatCsv(Number nr) {
+    if (nr == null) {
+      return "";
+    }
+
+    return nr.toString();
   }
 
   /**

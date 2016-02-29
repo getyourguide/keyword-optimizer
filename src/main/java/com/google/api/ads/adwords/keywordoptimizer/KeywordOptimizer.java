@@ -439,11 +439,11 @@ public class KeywordOptimizer {
 
       return seedGenerator;
     } else if ("st".equals(seedOption.getOpt())) {
-      String[] keywords = cmdLine.getOptionValues("sk");
+      String[] keywords = cmdLine.getOptionValues("st");
 
       TisSearchTermsSeedGenerator seedGenerator = new TisSearchTermsSeedGenerator(context, null);
       for (String keyword : keywords) {
-        log("Using seed serach term: " + keyword);
+        log("Using seed search term: " + keyword);
         seedGenerator.addSearchTerm(keyword);
       }
 
@@ -578,18 +578,18 @@ public class KeywordOptimizer {
           eval.getKeyword().getText(),
           eval.getKeyword().getMatchType(),
           eval.getScore(),
-          estimate.getMin().getImpressionsPerDay(),
-          estimate.getMean().getImpressionsPerDay(),
-          estimate.getMax().getImpressionsPerDay(),
-          estimate.getMin().getClicksPerDay(),
-          estimate.getMean().getClicksPerDay(),
-          estimate.getMax().getClicksPerDay(),
-          estimate.getMin().getClickThroughRate(),
-          estimate.getMean().getClickThroughRate(),
-          estimate.getMax().getClickThroughRate(),
-          estimate.getMin().getAveragePosition(),
-          estimate.getMean().getAveragePosition(),
-          estimate.getMax().getAveragePosition(),
+          KeywordOptimizerUtil.formatCsv(estimate.getMin().getImpressionsPerDay()),
+          KeywordOptimizerUtil.formatCsv(estimate.getMean().getImpressionsPerDay()),
+          KeywordOptimizerUtil.formatCsv(estimate.getMax().getImpressionsPerDay()),
+          KeywordOptimizerUtil.formatCsv(estimate.getMin().getClicksPerDay()),
+          KeywordOptimizerUtil.formatCsv(estimate.getMean().getClicksPerDay()),
+          KeywordOptimizerUtil.formatCsv(estimate.getMax().getClicksPerDay()),
+          KeywordOptimizerUtil.formatCsv(estimate.getMin().getClickThroughRate()),
+          KeywordOptimizerUtil.formatCsv(estimate.getMean().getClickThroughRate()),
+          KeywordOptimizerUtil.formatCsv(estimate.getMax().getClickThroughRate()),
+          KeywordOptimizerUtil.formatCsv(estimate.getMin().getAveragePosition()),
+          KeywordOptimizerUtil.formatCsv(estimate.getMean().getAveragePosition()),
+          KeywordOptimizerUtil.formatCsv(estimate.getMax().getAveragePosition()),
           KeywordOptimizerUtil.format(estimate.getMin().getAverageCpc()),
           KeywordOptimizerUtil.format(estimate.getMean().getAverageCpc()),
           KeywordOptimizerUtil.format(estimate.getMax().getAverageCpc()),
