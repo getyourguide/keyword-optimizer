@@ -14,16 +14,16 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201509.cm.Criterion;
-import com.google.api.ads.adwords.axis.v201509.cm.Keyword;
-import com.google.api.ads.adwords.axis.v201509.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201509.cm.Language;
-import com.google.api.ads.adwords.axis.v201509.cm.Location;
-import com.google.api.ads.adwords.axis.v201509.cm.Money;
-import com.google.api.ads.adwords.axis.v201509.o.LanguageSearchParameter;
-import com.google.api.ads.adwords.axis.v201509.o.LocationSearchParameter;
-import com.google.api.ads.adwords.axis.v201509.o.SearchParameter;
-import com.google.api.ads.adwords.axis.v201509.o.StatsEstimate;
+import com.google.api.ads.adwords.axis.v201603.cm.Criterion;
+import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201603.cm.Language;
+import com.google.api.ads.adwords.axis.v201603.cm.Location;
+import com.google.api.ads.adwords.axis.v201603.cm.Money;
+import com.google.api.ads.adwords.axis.v201603.o.LanguageSearchParameter;
+import com.google.api.ads.adwords.axis.v201603.o.LocationSearchParameter;
+import com.google.api.ads.adwords.axis.v201603.o.SearchParameter;
+import com.google.api.ads.adwords.axis.v201603.o.StatsEstimate;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

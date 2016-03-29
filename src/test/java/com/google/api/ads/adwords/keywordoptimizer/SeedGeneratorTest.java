@@ -16,7 +16,7 @@ package com.google.api.ads.adwords.keywordoptimizer;
 
 import static org.junit.Assert.assertEquals;
 
-import com.google.api.ads.adwords.axis.v201509.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -14,7 +14,7 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201509.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
 
 import org.apache.commons.lang.SystemUtils;
 

@@ -14,22 +14,22 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201509.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201509.cm.Keyword;
-import com.google.api.ads.adwords.axis.v201509.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201509.cm.Paging;
-import com.google.api.ads.adwords.axis.v201509.o.Attribute;
-import com.google.api.ads.adwords.axis.v201509.o.AttributeType;
-import com.google.api.ads.adwords.axis.v201509.o.IdeaType;
-import com.google.api.ads.adwords.axis.v201509.o.RelatedToQuerySearchParameter;
-import com.google.api.ads.adwords.axis.v201509.o.RequestType;
-import com.google.api.ads.adwords.axis.v201509.o.SearchParameter;
-import com.google.api.ads.adwords.axis.v201509.o.StringAttribute;
-import com.google.api.ads.adwords.axis.v201509.o.TargetingIdea;
-import com.google.api.ads.adwords.axis.v201509.o.TargetingIdeaPage;
-import com.google.api.ads.adwords.axis.v201509.o.TargetingIdeaSelector;
-import com.google.api.ads.adwords.axis.v201509.o.TargetingIdeaService;
-import com.google.api.ads.adwords.axis.v201509.o.TargetingIdeaServiceInterface;
+import com.google.api.ads.adwords.axis.v201603.cm.ApiException;
+import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201603.cm.Paging;
+import com.google.api.ads.adwords.axis.v201603.o.Attribute;
+import com.google.api.ads.adwords.axis.v201603.o.AttributeType;
+import com.google.api.ads.adwords.axis.v201603.o.IdeaType;
+import com.google.api.ads.adwords.axis.v201603.o.RelatedToQuerySearchParameter;
+import com.google.api.ads.adwords.axis.v201603.o.RequestType;
+import com.google.api.ads.adwords.axis.v201603.o.SearchParameter;
+import com.google.api.ads.adwords.axis.v201603.o.StringAttribute;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdea;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaPage;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaSelector;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaService;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaServiceInterface;
 import com.google.api.ads.common.lib.utils.Maps;
 
 import java.rmi.RemoteException;

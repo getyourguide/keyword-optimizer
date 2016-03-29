@@ -14,9 +14,9 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201509.cm.Criterion;
-import com.google.api.ads.adwords.axis.v201509.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201509.cm.Money;
+import com.google.api.ads.adwords.axis.v201603.cm.Criterion;
+import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201603.cm.Money;
 
 /**
  * A {@link SeedGenerator} creates a set of initial keywords. Each implementation defines separately

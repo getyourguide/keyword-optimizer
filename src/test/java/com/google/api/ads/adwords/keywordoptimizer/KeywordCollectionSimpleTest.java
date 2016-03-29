@@ -17,11 +17,11 @@ package com.google.api.ads.adwords.keywordoptimizer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.google.api.ads.adwords.axis.v201509.cm.Keyword;
-import com.google.api.ads.adwords.axis.v201509.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201509.cm.Language;
-import com.google.api.ads.adwords.axis.v201509.cm.Location;
-import com.google.api.ads.adwords.axis.v201509.cm.Money;
+import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201603.cm.Language;
+import com.google.api.ads.adwords.axis.v201603.cm.Location;
+import com.google.api.ads.adwords.axis.v201603.cm.Money;
 
 import org.junit.Before;
 import org.junit.Test;

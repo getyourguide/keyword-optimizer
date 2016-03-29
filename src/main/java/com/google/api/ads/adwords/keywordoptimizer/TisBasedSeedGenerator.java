@@ -14,17 +14,17 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201509.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201509.cm.Money;
-import com.google.api.ads.adwords.axis.v201509.cm.Paging;
-import com.google.api.ads.adwords.axis.v201509.o.Attribute;
-import com.google.api.ads.adwords.axis.v201509.o.AttributeType;
-import com.google.api.ads.adwords.axis.v201509.o.StringAttribute;
-import com.google.api.ads.adwords.axis.v201509.o.TargetingIdea;
-import com.google.api.ads.adwords.axis.v201509.o.TargetingIdeaPage;
-import com.google.api.ads.adwords.axis.v201509.o.TargetingIdeaSelector;
-import com.google.api.ads.adwords.axis.v201509.o.TargetingIdeaService;
-import com.google.api.ads.adwords.axis.v201509.o.TargetingIdeaServiceInterface;
+import com.google.api.ads.adwords.axis.v201603.cm.ApiException;
+import com.google.api.ads.adwords.axis.v201603.cm.Money;
+import com.google.api.ads.adwords.axis.v201603.cm.Paging;
+import com.google.api.ads.adwords.axis.v201603.o.Attribute;
+import com.google.api.ads.adwords.axis.v201603.o.AttributeType;
+import com.google.api.ads.adwords.axis.v201603.o.StringAttribute;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdea;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaPage;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaSelector;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaService;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaServiceInterface;
 import com.google.api.ads.common.lib.utils.Maps;
 
 import java.rmi.RemoteException;
