@@ -16,6 +16,7 @@ package com.google.api.ads.adwords.keywordoptimizer;
 
 import static org.hamcrest.core.Is.isA;
 
+import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.UnrecognizedOptionException;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,15 +39,9 @@ public class CommandLineTest {
    */
   @Test
   public void checkNoArg() throws KeywordOptimizerException {
-    KeywordOptimizer.run("");
-  }
-
-  /**
-   * Checks if the basic "help" command works.
-   */
-  @Test
-  public void checkHelp() throws KeywordOptimizerException {
-    KeywordOptimizer.run("-h");
+    thrown.expect(KeywordOptimizerException.class);
+    thrown.expectCause(isA(MissingOptionException.class));
+    KeywordOptimizer.main(new String[]{});
   }
 
   /**
@@ -84,5 +79,28 @@ public class CommandLineTest {
   public void checkNoSeedArguments() throws KeywordOptimizerException {
     thrown.expect(KeywordOptimizerException.class);
     KeywordOptimizer.run("-cpc 1.0 -m EXACT");
+  }
+  
+  /**
+   * Checks if specifying a wrong combination of output parameters (CSV output without file)
+   * throws an exception.
+   */
+  @Test
+  public void checkWrongOutputArguments() throws KeywordOptimizerException {
+    thrown.expect(KeywordOptimizerException.class);
+    thrown.expectMessage("An output file must be specified if output mode is CSV");
+    KeywordOptimizer.run(
+        "-kp keyword-optimizer.properties -ap ads.properties -cpc 1.0 -m EXACT -sk plumber -o CSV");
+  }
+  
+  /**
+   * Checks if specifying a wrong output mode throws an exception.
+   */
+  @Test
+  public void checkWrongOutputMode() throws KeywordOptimizerException {
+    thrown.expect(KeywordOptimizerException.class);
+    thrown.expectMessage("Output mode 'ABC' is not supported");
+    KeywordOptimizer.run(
+        "-kp keyword-optimizer.properties -ap ads.properties -cpc 1.0 -m EXACT -sk plumber -o ABC");
   }
 }

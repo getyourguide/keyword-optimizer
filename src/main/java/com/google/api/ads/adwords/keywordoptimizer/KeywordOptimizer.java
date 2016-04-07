@@ -63,6 +63,25 @@ public class KeywordOptimizer {
       "Avg. Cpc (mean)", "Avg. Cpc (max)", "Cost (min)", "Cost (mean)", "Cost (max)"};
 
   /**
+   * Available output modes for results. An output mode may or may not need an addition file 
+   * parameter.
+   */
+  private enum OutputMode {
+    CSV(true),
+    CONSOLE(false);
+
+    private boolean outputFileRequired;
+
+    public boolean isOutputFileRequired() {
+      return outputFileRequired;
+    }
+
+    private OutputMode(boolean outputFileRequired) {
+      this.outputFileRequired = outputFileRequired;
+    }
+  }
+  
+  /**
    * Main method called from the command line.
    *
    * @param args command line arguments
@@ -114,12 +133,10 @@ public class KeywordOptimizer {
       throw new KeywordOptimizerException("Error parsing command line parameters", e);
     }
 
-    if (args.length == 0 || cmdLine.hasOption("h")) {
-      printHelp(options);
-      return;
-    }
-
     logHeadline("Startup");
+    
+    // Check output parameters ahead of time.
+    checkOutputParameters(cmdLine);
 
     OptimizationContext context = createContext(cmdLine);
 
@@ -162,18 +179,15 @@ public class KeywordOptimizer {
     OptionBuilder.withDescription("Location of the keyword-optimizer.properties file.");
     OptionBuilder.hasArg(true);
     OptionBuilder.withArgName("file");
+    OptionBuilder.isRequired();
     options.addOption(OptionBuilder.create("kp"));
 
     OptionBuilder.withLongOpt("ads-properties");
     OptionBuilder.withDescription("Location of the ads.properties file.");
     OptionBuilder.hasArg(true);
     OptionBuilder.withArgName("file");
+    OptionBuilder.isRequired();
     options.addOption(OptionBuilder.create("ap"));
-
-    OptionBuilder.withLongOpt("help");
-    OptionBuilder.withDescription("Shows this help screen.");
-    OptionBuilder.withArgName("help");
-    options.addOption(OptionBuilder.create("h"));
 
     OptionBuilder.withLongOpt("seed-keywords");
     OptionBuilder.withDescription(
@@ -239,12 +253,14 @@ public class KeywordOptimizer {
     OptionBuilder.hasArg(true);
     OptionBuilder.hasArgs(3);
     OptionBuilder.withArgName("types");
+    OptionBuilder.isRequired();
     options.addOption(OptionBuilder.create("m"));
 
     OptionBuilder.withLongOpt("max-cpc");
     OptionBuilder.withDescription("Use the given maximum CPC (in USD, e.g., 5.0 for $5).");
     OptionBuilder.hasArg(true);
     OptionBuilder.withArgName("double");
+    OptionBuilder.isRequired();
     options.addOption(OptionBuilder.create("cpc"));
 
     OptionBuilder.withLongOpt("locations");
@@ -272,6 +288,7 @@ public class KeywordOptimizer {
     OptionBuilder.hasArg(true);
     OptionBuilder.hasArgs(2);
     OptionBuilder.withArgName("mode");
+    OptionBuilder.isRequired();
     options.addOption(OptionBuilder.create("o"));
 
     OptionBuilder.withLongOpt("output-file");
@@ -282,6 +299,27 @@ public class KeywordOptimizer {
     options.addOption(OptionBuilder.create("of"));
 
     return options;
+  }
+
+  /**
+   * Checks if output parameters are specified correctly.
+   *
+   * @param cmdLine the parsed command line parameters
+   * @throws KeywordOptimizerException in case there is a parameter mismatch
+   */
+  private static void checkOutputParameters(CommandLine cmdLine) throws KeywordOptimizerException {
+    for (String mode : cmdLine.getOptionValues("o")) {
+      try {
+        OutputMode outputMode = OutputMode.valueOf(mode);
+
+        if (outputMode.isOutputFileRequired() && !cmdLine.hasOption("of")) {
+          throw new KeywordOptimizerException(
+              "An output file must be specified if output mode is " + outputMode);
+        }
+      } catch (IllegalArgumentException e) {
+        throw new KeywordOptimizerException("Output mode '" + mode + "' is not supported", e);
+      }
+    }
   }
 
   /**
@@ -331,12 +369,6 @@ public class KeywordOptimizer {
    */
   private static void addMatchTypes(CommandLine cmdLine, SeedGenerator seedGenerator)
       throws KeywordOptimizerException {
-    if (!cmdLine.hasOption("m")) {
-      throw new KeywordOptimizerException(
-          "Parameter 'match-types' is not specified, please specify "
-          + "at least one match type for your keywords");
-    }
-
     for (String matchType : cmdLine.getOptionValues("m")) {
       KeywordMatchType mt = KeywordMatchType.fromString(matchType);
 
@@ -354,11 +386,6 @@ public class KeywordOptimizer {
    */
   private static void addCpc(CommandLine cmdLine, SeedGenerator seedGenerator)
       throws KeywordOptimizerException {
-    if (!cmdLine.hasOption("cpc")) {
-      throw new KeywordOptimizerException("Parameter 'max-cpc' is not specified, please specify "
-          + "the maximum cost per click");
-    }
-
     double cpc = Double.parseDouble(cmdLine.getOptionValue("cpc"));
 
     Money maxCpc = new Money();
@@ -528,17 +555,18 @@ public class KeywordOptimizer {
    */
   private static void output(CommandLine cmdLine, KeywordCollection bestKeywords)
       throws KeywordOptimizerException {
-    if (!cmdLine.hasOption("o")) {
-      outputCsv(cmdLine, bestKeywords);
-    } else {
-      for (String mode : cmdLine.getOptionValues("o")) {
-        if ("CONSOLE".equalsIgnoreCase(mode)) {
+    for (String mode : cmdLine.getOptionValues("o")) {
+      OutputMode outputMode = OutputMode.valueOf(mode);
+
+      switch (outputMode) {
+        case CONSOLE:
           outputConsole(bestKeywords);
-        } else if ("CSV".equalsIgnoreCase(mode)) {
+          break;
+        case CSV:
           outputCsv(cmdLine, bestKeywords);
-        } else {
-          throw new KeywordOptimizerException("Output mode '" + mode + "' is not supported");
-        }
+          break;
+        default:
+          throw new KeywordOptimizerException("Parameter -o is required");
       }
     }
   }
