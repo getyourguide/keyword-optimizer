@@ -45,6 +45,7 @@ import java.util.Map;
  */
 public class TisAlternativesFinder implements AlternativesFinder {
   private TargetingIdeaServiceInterface tis;
+  private final Long clientCustomerId;
 
   /**
    * Creates a new {@link TisAlternativesFinder}.
@@ -53,6 +54,7 @@ public class TisAlternativesFinder implements AlternativesFinder {
    */
   public TisAlternativesFinder(OptimizationContext context) {
     tis = context.getAdwordsApiUtil().getService(TargetingIdeaServiceInterface.class);
+    clientCustomerId = context.getAdwordsApiUtil().getClientCustomerId();
   }
 
   @Override
@@ -111,7 +113,7 @@ public class TisAlternativesFinder implements AlternativesFinder {
    */
   protected Collection<String> getKeywordTexts(KeywordCollection keywords)
       throws KeywordOptimizerException {
-    TargetingIdeaSelector selector = getSelector(keywords);
+    final TargetingIdeaSelector selector = getSelector(keywords);
     Collection<String> keywordTexts = new ArrayList<String>();
 
     int offset = 0;
@@ -122,7 +124,13 @@ public class TisAlternativesFinder implements AlternativesFinder {
       do {
         selector.setPaging(new Paging(offset, TisBasedSeedGenerator.PAGE_SIZE));
 
-        page = tis.get(selector);
+        page = AwapiRateLimiter.getInstance().run(new AwapiCall<TargetingIdeaPage>() {
+          @Override
+          public TargetingIdeaPage invoke() throws ApiException, RemoteException {
+            return tis.get(selector);
+          }
+        }, clientCustomerId);
+
         if (page.getEntries() != null) {
           for (TargetingIdea targetingIdea : page.getEntries()) {
             Map<AttributeType, Attribute> data = Maps.toMap(targetingIdea.getData());

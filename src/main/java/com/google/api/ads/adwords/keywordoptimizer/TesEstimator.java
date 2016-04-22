@@ -36,6 +36,7 @@ import java.util.List;
  */
 public class TesEstimator implements TrafficEstimator {
   private TrafficEstimatorServiceInterface tes;
+  private Long clientCustomerId;
 
   /**
    * Creates a new {@link TesEstimator}.
@@ -44,6 +45,7 @@ public class TesEstimator implements TrafficEstimator {
    */
   public TesEstimator(OptimizationContext context) {
     tes = context.getAdwordsApiUtil().getService(TrafficEstimatorServiceInterface.class);
+    clientCustomerId = context.getAdwordsApiUtil().getClientCustomerId();
   }
 
   /**
@@ -140,8 +142,14 @@ public class TesEstimator implements TrafficEstimator {
         return emptyEstimates;
       }
 
-      TrafficEstimatorSelector selector = createSelector(keywords);
-      TrafficEstimatorResult result = tes.get(selector);
+      final TrafficEstimatorSelector selector = createSelector(keywords);
+      TrafficEstimatorResult result = AwapiRateLimiter.getInstance()
+          .run(new AwapiCall<TrafficEstimatorResult>() {
+            @Override
+            public TrafficEstimatorResult invoke() throws ApiException, RemoteException {
+              return tes.get(selector);
+            }
+          }, clientCustomerId);
       KeywordCollection estimates = createEstimates(result, keywords);
 
       return estimates;

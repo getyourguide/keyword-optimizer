@@ -220,4 +220,12 @@ public class AdWordsApiUtil {
   public <Type> Type getService(Class<Type> interfaceClass) {
     return services.get(session, interfaceClass);
   }
+
+  /**
+   * Get client customer ID from the adwords session, and convert it to Long type.
+   */
+  public Long getClientCustomerId() {
+    String accountIdStr = session.getClientCustomerId();
+    return accountIdStr == null ? null : Long.valueOf(accountIdStr.replace("-", ""));
+  }
 }

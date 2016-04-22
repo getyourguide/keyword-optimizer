@@ -46,6 +46,7 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
   public static final int PAGE_SIZE = 100;
 
   protected TargetingIdeaServiceInterface tis;
+  private final Long clientCustomerId;
 
   /**
    * Creates a new {@link TisBasedSeedGenerator}.
@@ -56,6 +57,7 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
   public TisBasedSeedGenerator(OptimizationContext context, @Nullable Money maxCpc) {
     super(maxCpc);
     tis = context.getAdwordsApiUtil().getService(TargetingIdeaServiceInterface.class);
+    clientCustomerId = context.getAdwordsApiUtil().getClientCustomerId();
   }
 
   /**
@@ -65,7 +67,7 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
 
   @Override
   protected Collection<String> getKeywords() throws KeywordOptimizerException {
-    TargetingIdeaSelector selector = getSelector();
+    final TargetingIdeaSelector selector = getSelector();
     Collection<String> keywords = new ArrayList<String>();
 
     try {
@@ -76,7 +78,13 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
       do {
         selector.setPaging(new Paging(offset, PAGE_SIZE));
 
-        page = tis.get(selector);
+        page = AwapiRateLimiter.getInstance().run(new AwapiCall<TargetingIdeaPage>() {
+          @Override
+          public TargetingIdeaPage invoke() throws ApiException, RemoteException {
+            return tis.get(selector);
+          }
+        }, clientCustomerId);
+
         if (page.getEntries() != null) {
           for (TargetingIdea targetingIdea : page.getEntries()) {
             Map<AttributeType, Attribute> data = Maps.toMap(targetingIdea.getData());
