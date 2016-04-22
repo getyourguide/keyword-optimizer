@@ -27,5 +27,5 @@ public interface ScoreCalculator {
    * @return a score derived from the given estimate (higher scores are considered better)
    * @throws KeywordOptimizerException in case of a problem calculating the score
    */
-  public double calculate(TrafficEstimate estimate) throws KeywordOptimizerException;
+  double calculate(TrafficEstimate estimate) throws KeywordOptimizerException;
 }

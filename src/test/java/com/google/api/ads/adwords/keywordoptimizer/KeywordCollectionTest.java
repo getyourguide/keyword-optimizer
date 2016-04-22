@@ -31,10 +31,11 @@ import org.junit.runners.JUnit4;
 import java.util.Collection;
 
 /**
- * Simple test cases for the {@link KeywordCollection} class (keyword handling only).
+ * Test cases for the {@link KeywordCollection} class regarding keyword handling (keyword texts,
+ * match types, duplicates).
  */
 @RunWith(JUnit4.class)
-public class KeywordCollectionSimpleTest {
+public class KeywordCollectionTest {
   private Keyword plumbing;
   private Keyword plumbingBroad;
   private Keyword plumbingSpecialist;
@@ -70,13 +71,17 @@ public class KeywordCollectionSimpleTest {
     maxCpc = new Money();
     maxCpc.setMicroAmount(1000000L); // 1 usd
 
-    keywords = new KeywordCollection(maxCpc);
+    CampaignConfiguration campaignSettings = CampaignConfiguration.builder()
+        .withMaxCpc(maxCpc)
+        .withCriterion(english)
+        .withCriterion(newYork)
+        .build();
+    keywords = new KeywordCollection(campaignSettings);
+    
+    keywords = new KeywordCollection(campaignSettings);
     keywords.add(new KeywordInfo(plumbing, null, null));
     keywords.add(new KeywordInfo(plumbingBroad, null, null));
     keywords.add(new KeywordInfo(plumbingSpecialist, null, null));
-
-    keywords.addAdditionalCriterion(newYork);
-    keywords.addAdditionalCriterion(english);
   }
 
   /**
@@ -94,7 +99,7 @@ public class KeywordCollectionSimpleTest {
    * Check all keyword texts are in there.
    */
   @Test
-  public void checkKeywordsTexts() {
+  public void checkKeywordTexts() {
     Collection<String> keywordTexts = keywords.getContainingKeywordTexts();
 
     assertTrue(keywordTexts.contains(plumbing.getText()));
@@ -110,9 +115,9 @@ public class KeywordCollectionSimpleTest {
    */
   @Test
   public void checkContainsAdditionalCriterions() {
-    assertTrue(keywords.getAdditionalCriteria().contains(newYork));
-    assertTrue(keywords.getAdditionalCriteria().contains(english));
-    assertEquals(2, keywords.getAdditionalCriteria().size());
+    assertTrue(keywords.getCampaignConfiguration().getAdditionalCriteria().contains(newYork));
+    assertTrue(keywords.getCampaignConfiguration().getAdditionalCriteria().contains(english));
+    assertEquals(2, keywords.getCampaignConfiguration().getAdditionalCriteria().size());
   }
 
   /**

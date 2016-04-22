@@ -14,7 +14,7 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.Money;
+import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
 import com.google.api.ads.adwords.axis.v201603.cm.Paging;
 import com.google.api.ads.adwords.axis.v201603.o.AttributeType;
 import com.google.api.ads.adwords.axis.v201603.o.IdeaType;
@@ -22,13 +22,12 @@ import com.google.api.ads.adwords.axis.v201603.o.RelatedToUrlSearchParameter;
 import com.google.api.ads.adwords.axis.v201603.o.RequestType;
 import com.google.api.ads.adwords.axis.v201603.o.SearchParameter;
 import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaSelector;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaServiceInterface;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.annotation.Nullable;
 
 /**
  * Creates a set of seed keywords derived from the content of a list of given URLs.
@@ -37,13 +36,20 @@ public class TisUrlSeedGenerator extends TisBasedSeedGenerator {
   private final Set<String> urls;
 
   /**
-   * Creates a new {@link TisUrlSeedGenerator}. Please note that URLs have to be added separately.
-   * 
-   * @param context holding shared objects during the optimization process
-   * @param maxCpc maximum cpc to be used for keyword evaluation
+   * Creates a new {@link TisUrlSeedGenerator} based on the given service and customer id. Please
+   * note that URLs have to be added separately.
+   *
+   * @param tis the API interface to the TargetingIdeaService
+   * @param clientCustomerId the AdWords customer ID
+   * @param matchTypes match types to be used for seed keyword creation
+   * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
-  public TisUrlSeedGenerator(OptimizationContext context, @Nullable Money maxCpc) {
-    super(context, maxCpc);
+  public TisUrlSeedGenerator(
+      TargetingIdeaServiceInterface tis,
+      Long clientCustomerId,
+      Set<KeywordMatchType> matchTypes,
+      CampaignConfiguration campaignConfiguration) {
+    super(tis, clientCustomerId, matchTypes, campaignConfiguration);
     urls = new HashSet<String>();
   }
 
@@ -64,7 +70,9 @@ public class TisUrlSeedGenerator extends TisBasedSeedGenerator {
     searchParameters.add(relatedToUrlSearchParameter);
 
     // Now add all other criteria.
-    searchParameters.addAll(KeywordOptimizerUtil.toSearchParameters(getAdditionalCriteria()));
+    searchParameters.addAll(
+        KeywordOptimizerUtil.toSearchParameters(
+            getCampaignConfiguration().getAdditionalCriteria()));
 
     selector.setSearchParameters(searchParameters.toArray(new SearchParameter[] {}));
 

@@ -15,7 +15,7 @@
 package com.google.api.ads.adwords.keywordoptimizer;
 
 import com.google.api.ads.adwords.axis.v201603.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201603.cm.Money;
+import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
 import com.google.api.ads.adwords.axis.v201603.cm.Paging;
 import com.google.api.ads.adwords.axis.v201603.o.Attribute;
 import com.google.api.ads.adwords.axis.v201603.o.AttributeType;
@@ -31,8 +31,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-
-import javax.annotation.Nullable;
+import java.util.Set;
 
 /**
  * Base class for {@link SeedGenerator}s using the {@link TargetingIdeaService} for creating seed
@@ -46,16 +45,24 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
   public static final int PAGE_SIZE = 100;
 
   protected TargetingIdeaServiceInterface tis;
+  private final Long clientCustomerId;
 
   /**
-   * Creates a new {@link TisBasedSeedGenerator}.
-   * 
-   * @param context holding shared objects during the optimization process
-   * @param maxCpc maximum cpc to be used for keyword evaluation
+   * Creates a new {@link TisBasedSeedGenerator} based on the given service and customer id.
+   *
+   * @param tis the API interface to the TargetingIdeaService
+   * @param clientCustomerId the AdWords customer ID
+   * @param matchTypes match types to be used for seed keyword creation
+   * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
-  public TisBasedSeedGenerator(OptimizationContext context, @Nullable Money maxCpc) {
-    super(maxCpc);
-    tis = context.getAdwordsApiUtil().getService(TargetingIdeaServiceInterface.class);
+  public TisBasedSeedGenerator(
+      TargetingIdeaServiceInterface tis,
+      Long clientCustomerId,
+      Set<KeywordMatchType> matchTypes,
+      CampaignConfiguration campaignConfiguration) {
+    super(matchTypes, campaignConfiguration);
+    this.tis = tis;
+    this.clientCustomerId = clientCustomerId;
   }
 
   /**
@@ -65,7 +72,7 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
 
   @Override
   protected Collection<String> getKeywords() throws KeywordOptimizerException {
-    TargetingIdeaSelector selector = getSelector();
+    final TargetingIdeaSelector selector = getSelector();
     Collection<String> keywords = new ArrayList<String>();
 
     try {
@@ -76,7 +83,13 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
       do {
         selector.setPaging(new Paging(offset, PAGE_SIZE));
 
-        page = tis.get(selector);
+        page = AwapiRateLimiter.getInstance().run(new AwapiCall<TargetingIdeaPage>() {
+          @Override
+          public TargetingIdeaPage invoke() throws ApiException, RemoteException {
+            return tis.get(selector);
+          }
+        }, clientCustomerId);
+
         if (page.getEntries() != null) {
           for (TargetingIdea targetingIdea : page.getEntries()) {
             Map<AttributeType, Attribute> data = Maps.toMap(targetingIdea.getData());

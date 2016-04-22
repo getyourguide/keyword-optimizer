@@ -88,7 +88,7 @@ public class DefaultRoundStrategy implements RoundStrategy {
 
     // 2. Replicate best ones.
     KeywordCollection bestKeywords = nextPopulation.getBest(maxNumberOfAlternatives);
-    KeywordCollection alternativeKeywords = alternativesFinder.find(bestKeywords);
+    KeywordCollection alternativeKeywords = alternativesFinder.derive(bestKeywords);
     logger.info("- Found " + alternativeKeywords.size() + " keywords based on "
         + maxNumberOfAlternatives + " current best");
 

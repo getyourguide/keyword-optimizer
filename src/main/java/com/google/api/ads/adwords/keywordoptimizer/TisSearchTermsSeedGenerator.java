@@ -14,7 +14,7 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.Money;
+import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
 import com.google.api.ads.adwords.axis.v201603.cm.Paging;
 import com.google.api.ads.adwords.axis.v201603.o.AttributeType;
 import com.google.api.ads.adwords.axis.v201603.o.IdeaType;
@@ -22,13 +22,12 @@ import com.google.api.ads.adwords.axis.v201603.o.RelatedToQuerySearchParameter;
 import com.google.api.ads.adwords.axis.v201603.o.RequestType;
 import com.google.api.ads.adwords.axis.v201603.o.SearchParameter;
 import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaSelector;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaServiceInterface;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.annotation.Nullable;
 
 /**
  * Creates a set of seed keywords derived from a list of example search terms.
@@ -39,12 +38,18 @@ public class TisSearchTermsSeedGenerator extends TisBasedSeedGenerator {
   /**
    * Creates a new {@link TisSearchTermsSeedGenerator}. Please note that example keywords have to be
    * added separately.
-   * 
-   * @param context holding shared objects during the optimization process
-   * @param maxCpc maximum cpc to be used for keyword evaluation
+   *
+   * @param tis the API interface to the TargetingIdeaService
+   * @param clientCustomerId the AdWords customer ID
+   * @param matchTypes match types to be used for seed keyword creation
+   * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
-  public TisSearchTermsSeedGenerator(OptimizationContext context, @Nullable Money maxCpc) {
-    super(context, maxCpc);
+  public TisSearchTermsSeedGenerator(
+      TargetingIdeaServiceInterface tis,
+      Long clientCustomerId,
+      Set<KeywordMatchType> matchTypes,
+      CampaignConfiguration campaignConfiguration) {
+    super(tis, clientCustomerId, matchTypes, campaignConfiguration);
     seedKeywords = new HashSet<String>();
   }
 
@@ -66,7 +71,8 @@ public class TisSearchTermsSeedGenerator extends TisBasedSeedGenerator {
     searchParameters.add(relatedToQuerySearchParameter);
 
     // Now add all other criteria.
-    searchParameters.addAll(KeywordOptimizerUtil.toSearchParameters(getAdditionalCriteria()));
+    searchParameters.addAll(
+        KeywordOptimizerUtil.toSearchParameters(getCampaignConfiguration().getAdditionalCriteria()));
 
     selector.setSearchParameters(searchParameters.toArray(new SearchParameter[] {}));
 

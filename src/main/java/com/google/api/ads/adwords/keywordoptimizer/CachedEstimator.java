@@ -47,8 +47,8 @@ public class CachedEstimator implements TrafficEstimator {
 
   @Override
   public KeywordCollection estimate(KeywordCollection keywords) throws KeywordOptimizerException {
-    KeywordCollection cachedEstimates = new KeywordCollection(keywords);
-    KeywordCollection retrieveKeywords = new KeywordCollection(keywords);
+    KeywordCollection cachedEstimates = new KeywordCollection(keywords.getCampaignConfiguration());
+    KeywordCollection retrieveKeywords = new KeywordCollection(keywords.getCampaignConfiguration());
 
     // Check if there are any keywords already in the cache.
     for (Keyword keyword : keywords.getKeywords()) {

@@ -32,5 +32,5 @@ public interface TrafficEstimator {
    *         {@link TrafficEstimate}s set
    * @throws KeywordOptimizerException in case of an error estimating they keyword traffic
    */
-  public KeywordCollection estimate(KeywordCollection keywords) throws KeywordOptimizerException;
+  KeywordCollection estimate(KeywordCollection keywords) throws KeywordOptimizerException;
 }

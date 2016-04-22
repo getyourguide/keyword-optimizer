@@ -17,9 +17,9 @@ package com.google.api.ads.adwords.keywordoptimizer;
 import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
 
 /**
- * Evaluates a list of given {@link KeywordCollection} by calculating a score for it. The way this
- * score is calculated heavily depends on different implementations, but a better score generally
- * means a better {@link Keyword}. The score itself is for comparison only.
+ * Evaluates a list of given {@link KeywordCollection} by calculating a score for it. The way the
+ * score is calculated is determined by the implementation and a better score should indicate a
+ * "better" {@link Keyword} according to some metric. The score is for comparison only.
  */
 public interface Evaluator {
   /**
@@ -32,5 +32,5 @@ public interface Evaluator {
    * @return {@link KeywordCollection} a copy of the given keyword infos, with scores set
    * @throws KeywordOptimizerException in case of an error while evaluating keywords
    */
-  public KeywordCollection evaluate(KeywordCollection keywords) throws KeywordOptimizerException;
+  KeywordCollection evaluate(KeywordCollection keywords) throws KeywordOptimizerException;
 }

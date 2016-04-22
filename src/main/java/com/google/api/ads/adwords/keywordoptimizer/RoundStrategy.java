@@ -21,8 +21,8 @@ package com.google.api.ads.adwords.keywordoptimizer;
 public interface RoundStrategy {
   /**
    * Takes the population from the current round and uses the other given parameters to create the
-   * population for the next round. This method is called until isFinished returns true and should
-   * return <code>null</code> in this is the case.
+   * population for the next round. This method is called until isFinished returns true (and should
+   * return <code>null</code> in this case).
    *
    * @param currentPopulation the current keyword population
    * @param alternativesFinder for providing keyword alternatives for the best keywords
@@ -30,7 +30,7 @@ public interface RoundStrategy {
    * @return next round's keyword population
    * @throws KeywordOptimizerException in case of an error while generating the new population
    */
-  public KeywordCollection nextRound(KeywordCollection currentPopulation,
+  KeywordCollection nextRound(KeywordCollection currentPopulation,
       AlternativesFinder alternativesFinder, Evaluator evaluator) throws KeywordOptimizerException;
 
   /**
@@ -40,5 +40,5 @@ public interface RoundStrategy {
    * @return should the process be stopped or continued
    * @throws KeywordOptimizerException in case of an error determining if the search is finished
    */
-  public boolean isFinished(KeywordCollection currentPopulation) throws KeywordOptimizerException;
+  boolean isFinished(KeywordCollection currentPopulation) throws KeywordOptimizerException;
 }

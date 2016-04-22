@@ -14,10 +14,6 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.Criterion;
-import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201603.cm.Money;
-
 /**
  * A {@link SeedGenerator} creates a set of initial keywords. Each implementation defines separately
  * how this is done (e.g. for a URL or category), but has to make sure the additional information 
@@ -31,42 +27,10 @@ public interface SeedGenerator {
    * @return the generated {@link KeywordCollection}
    * @throws KeywordOptimizerException in case of an error generating the seed keywords
    */
-  public KeywordCollection generate() throws KeywordOptimizerException;
-
+  KeywordCollection generate() throws KeywordOptimizerException;
+  
   /**
-   * Adds an additional criterion in order to refine the estimates for the keywords. The generated
-   * keywords will contain these additional criteria.
-   * 
-   * @param criterion an additional criterion
+   * Returns additional campaign-level settings for keyword evaluation.
    */
-  public void addAdditionalCriterion(Criterion criterion);
-
-  /**
-   * Convenience method to add a location as an additional criterion.
-   * 
-   * @param locationId the ID of the location (e.g. 1023191 = New York)
-   */
-  public void addAdditionalLocation(long locationId);
-
-  /**
-   * Convenience method to add a language as an additional criterion.
-   * 
-   * @param languageId the ID of the language (e.g. 1000 = English)
-   */
-  public void addAdditionalLanguage(long languageId);
-
-  /**
-   * Set the max cpc for retrieving accurate estimates.
-   * 
-   * @param maxCpc the maximum cpc (cost per click) defined as {@link Money}
-   */
-  public void setMaxCpc(Money maxCpc);
-
-  /**
-   * Adds a keyword match type to the generator. Typically the generator will create keywords for
-   * each of the specified match types.
-   * 
-   * @param matchType the {@link KeywordMatchType} to be added
-   */
-  public void addMatchType(KeywordMatchType matchType);
+  CampaignConfiguration getCampaignConfiguration();
 }

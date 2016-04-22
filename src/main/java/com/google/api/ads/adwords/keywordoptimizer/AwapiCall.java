@@ -14,19 +14,16 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import java.util.Comparator;
+import com.google.api.ads.adwords.axis.v201603.cm.ApiException;
+
+import java.rmi.RemoteException;
 
 /**
- * Comparator for comparing {@link KeywordInfo}s by score. It sorts keywords in increasing order of
- * their score, worst ones first.
+ * A simple wrapper on any AdWords API function to feed {@link AwapiRateLimiter}
  */
-public class ScoreComparator implements Comparator<KeywordInfo> {
-  @Override
-  public int compare(KeywordInfo o1, KeywordInfo o2) {
-    if (o1.getScore() == null && o2.getScore() == null) {
-      return 0;
-    }
-
-    return Double.compare(o1.getScore(), o2.getScore());
-  }
+public interface AwapiCall<T> {
+  /**
+   * @return <T> the type of return value of the AdWords API call
+   */
+  public T invoke() throws ApiException, RemoteException;
 }

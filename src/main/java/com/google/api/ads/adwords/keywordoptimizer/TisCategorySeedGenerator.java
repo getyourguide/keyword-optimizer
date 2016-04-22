@@ -14,7 +14,7 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.Money;
+import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
 import com.google.api.ads.adwords.axis.v201603.cm.Paging;
 import com.google.api.ads.adwords.axis.v201603.o.AttributeType;
 import com.google.api.ads.adwords.axis.v201603.o.CategoryProductsAndServicesSearchParameter;
@@ -23,11 +23,11 @@ import com.google.api.ads.adwords.axis.v201603.o.RequestType;
 import com.google.api.ads.adwords.axis.v201603.o.SearchParameter;
 import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaSelector;
 import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaService;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaServiceInterface;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.Nullable;
+import java.util.Set;
 
 /**
  * Creates a set of seed keywords derived from a given products and services category using the
@@ -38,15 +38,22 @@ public class TisCategorySeedGenerator extends TisBasedSeedGenerator {
   private final int categoryId;
 
   /**
-   * Creates a new {@link TisCategorySeedGenerator} using the given category id
-   * (see https://developers.google.com/adwords/api/docs/appendix/productsservices).
-   * 
+   * Creates a new {@link TisCategorySeedGenerator} using the given category id (see
+   * https://developers.google.com/adwords/api/docs/appendix/productsservices).
+   *
+   * @param tis the API interface to the TargetingIdeaService
+   * @param clientCustomerId the AdWords customer ID
    * @param categoryId category id to be used
-   * @param maxCpc maximum cpc to be used for keyword evaluation
+   * @param matchTypes match types to be used for seed keyword creation
+   * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
   public TisCategorySeedGenerator(
-      OptimizationContext context, int categoryId, @Nullable Money maxCpc) {
-    super(context, maxCpc);
+      TargetingIdeaServiceInterface tis,
+      Long clientCustomerId,
+      int categoryId,
+      Set<KeywordMatchType> matchTypes,
+      CampaignConfiguration campaignConfiguration) {
+    super(tis, clientCustomerId, matchTypes, campaignConfiguration);
     this.categoryId = categoryId;
   }
 
@@ -68,7 +75,9 @@ public class TisCategorySeedGenerator extends TisBasedSeedGenerator {
     searchParameters.add(categoryParameter);
 
     // Now add all other criteria.
-    searchParameters.addAll(KeywordOptimizerUtil.toSearchParameters(getAdditionalCriteria()));
+    searchParameters.addAll(
+        KeywordOptimizerUtil.toSearchParameters(
+            getCampaignConfiguration().getAdditionalCriteria()));
 
     selector.setSearchParameters(searchParameters.toArray(new SearchParameter[] {}));
 
