@@ -30,7 +30,7 @@ public interface RoundStrategy {
    * @return next round's keyword population
    * @throws KeywordOptimizerException in case of an error while generating the new population
    */
-  public KeywordCollection nextRound(KeywordCollection currentPopulation,
+  KeywordCollection nextRound(KeywordCollection currentPopulation,
       AlternativesFinder alternativesFinder, Evaluator evaluator) throws KeywordOptimizerException;
 
   /**
@@ -40,5 +40,5 @@ public interface RoundStrategy {
    * @return should the process be stopped or continued
    * @throws KeywordOptimizerException in case of an error determining if the search is finished
    */
-  public boolean isFinished(KeywordCollection currentPopulation) throws KeywordOptimizerException;
+  boolean isFinished(KeywordCollection currentPopulation) throws KeywordOptimizerException;
 }

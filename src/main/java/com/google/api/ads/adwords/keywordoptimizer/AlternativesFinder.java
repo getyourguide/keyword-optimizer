@@ -28,5 +28,5 @@ public interface AlternativesFinder {
    * @return a list of alternatives / derived {@link KeywordCollection}
    * @throws KeywordOptimizerException in case of an error while finding keyword alternatives
    */
-  public KeywordCollection find(KeywordCollection keywords) throws KeywordOptimizerException;
+  KeywordCollection derive(KeywordCollection keywords) throws KeywordOptimizerException;
 }

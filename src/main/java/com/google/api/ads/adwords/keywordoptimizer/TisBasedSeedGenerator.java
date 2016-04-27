@@ -15,7 +15,6 @@
 package com.google.api.ads.adwords.keywordoptimizer;
 
 import com.google.api.ads.adwords.axis.v201603.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201603.cm.Money;
 import com.google.api.ads.adwords.axis.v201603.cm.Paging;
 import com.google.api.ads.adwords.axis.v201603.o.Attribute;
 import com.google.api.ads.adwords.axis.v201603.o.AttributeType;
@@ -31,8 +30,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 /**
  * Base class for {@link SeedGenerator}s using the {@link TargetingIdeaService} for creating seed
@@ -50,12 +47,13 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
 
   /**
    * Creates a new {@link TisBasedSeedGenerator}.
-   * 
+   *
    * @param context holding shared objects during the optimization process
-   * @param maxCpc maximum cpc to be used for keyword evaluation
+   * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
-  public TisBasedSeedGenerator(OptimizationContext context, @Nullable Money maxCpc) {
-    super(maxCpc);
+  public TisBasedSeedGenerator(
+      OptimizationContext context, CampaignConfiguration campaignConfiguration) {
+    super(campaignConfiguration);
     tis = context.getAdwordsApiUtil().getService(TargetingIdeaServiceInterface.class);
     clientCustomerId = context.getAdwordsApiUtil().getClientCustomerId();
   }

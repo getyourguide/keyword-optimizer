@@ -75,7 +75,7 @@ public class TesEstimator implements TrafficEstimator {
     // Convert the list of keywords into array.
     adGroupEstimateRequest.setKeywordEstimateRequests(keywordEstimateRequests
         .toArray(new KeywordEstimateRequest[] {}));
-    adGroupEstimateRequest.setMaxCpc(keywords.getMaxCpc());
+    adGroupEstimateRequest.setMaxCpc(keywords.getCampaignConfiguration().getMaxCpc());
     adGroupEstimateRequests.add(adGroupEstimateRequest);
 
 
@@ -87,7 +87,7 @@ public class TesEstimator implements TrafficEstimator {
     // Convert the list of ad groups into an array.
     campaignEstimateRequest.setAdGroupEstimateRequests(adGroupEstimateRequests
         .toArray(new AdGroupEstimateRequest[] {}));
-    campaignEstimateRequest.setCriteria(keywords.getAdditionalCriteria()
+    campaignEstimateRequest.setCriteria(keywords.getCampaignConfiguration().getAdditionalCriteria()
         .toArray(new Criterion[] {}));
 
     campaignEstimateRequests.add(campaignEstimateRequest);
@@ -119,7 +119,7 @@ public class TesEstimator implements TrafficEstimator {
     }
     List<KeywordInfo> sortedKeywords = keywords.getListSortedByKeyword();
 
-    KeywordCollection estimates = new KeywordCollection(keywords);
+    KeywordCollection estimates = new KeywordCollection(keywords.getCampaignConfiguration());
 
     KeywordEstimate[] keywordEstimates =
         result.getCampaignEstimates()[0].getAdGroupEstimates()[0].getKeywordEstimates();
@@ -138,7 +138,8 @@ public class TesEstimator implements TrafficEstimator {
     try {
       // If there are no keywords in list, return empty estimate.
       if (keywords.size() == 0) {
-        KeywordCollection emptyEstimates = new KeywordCollection(keywords);
+        KeywordCollection emptyEstimates =
+            new KeywordCollection(keywords.getCampaignConfiguration());
         return emptyEstimates;
       }
 

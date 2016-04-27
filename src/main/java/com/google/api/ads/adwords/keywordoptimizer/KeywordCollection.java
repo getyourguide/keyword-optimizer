@@ -16,12 +16,12 @@ package com.google.api.ads.adwords.keywordoptimizer;
 
 import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
 import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201603.cm.Money;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Ordering;
 
 import org.apache.commons.lang.SystemUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,52 +29,49 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 /**
  * Represents a set of keywords with information about their quality ({@link KeywordInfo}) as well
  * as related information in order to evaluate this quality information (
- * {@link AdditionalInfoHolder}). This collections is implemented as a map with {@link Keyword}'s as
- * keys and {@link KeywordInfo}'s as values to eliminate duplicates.
+ * {@link CampaignConfiguration}). This collections is implemented as a map with {@link Keyword}s
+ * as keys and {@link KeywordInfo}'s as values to eliminate duplicates.
  */
-public class KeywordCollection extends AdditionalInfoHolder implements Iterable<KeywordInfo> {
+public class KeywordCollection implements Iterable<KeywordInfo> {
+  private static final Joiner JOINER = Joiner.on(SystemUtils.FILE_SEPARATOR);
+  private final CampaignConfiguration campaignConfiguration;
   private final Map<Keyword, KeywordInfo> keywords;
 
   /**
-   * Creates a new {@link KeywordCollection} using the given max cpc.
-   * 
-   * @param maxCpc the maximum cpc (cost per click) as a {@link Money} object
+   * Creates a new {@link KeywordCollection} using the given settings.
+   *
+   * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
-  public KeywordCollection(@Nullable Money maxCpc) {
-    super(maxCpc);
+  public KeywordCollection(CampaignConfiguration campaignConfiguration) {
+    this.campaignConfiguration = campaignConfiguration;
     keywords = new HashMap<Keyword, KeywordInfo>();
   }
 
   /**
-   * Creates a new i{@link KeywordCollection} based on the settings of a given
-   * {@link AdditionalInfoHolder}. This clones all "additional" settings (additional criteria, max
-   * cpc), but not the ones defined in any subclasses.
-   * 
-   * @param other the prototype info holder to take the data from
-   */
-  public KeywordCollection(AdditionalInfoHolder other) {
-    super(other);
-    keywords = new HashMap<Keyword, KeywordInfo>();
-  }
-
-  /**
-   * Adds keyword information about a keyword to this collection.
+   * Adds information about a keyword to this collection.
    * 
    * @param info the keyword information to be added
    */
   public void add(KeywordInfo info) {
     keywords.put(info.getKeyword(), info);
   }
+  
+  /**
+   * Convenience method to add several {@link KeywordInfo}s to this collection.
+   * 
+   * @param infos the {@link KeywordInfo}s to be added
+   */
+  public void addAll(Collection<KeywordInfo> infos) {
+    for (KeywordInfo info : infos) {
+      keywords.put(info.getKeyword(), info);
+    }
+  }
 
   /**
    * Returns the size of this collection.
-   * 
-   * @return the number of {@link Keyword}s contained in this collection
    */
   public int size() {
     return keywords.size();
@@ -84,7 +81,6 @@ public class KeywordCollection extends AdditionalInfoHolder implements Iterable<
    * Returns whether information about a given keyword exists in this collection.
    * 
    * @param keyword they {@link Keyword} to be checked
-   * @return true if the list contains the {@link Keyword}
    */
   public boolean contains(Keyword keyword) {
     return keywords.containsKey(keyword);
@@ -92,17 +88,20 @@ public class KeywordCollection extends AdditionalInfoHolder implements Iterable<
 
   /**
    * Returns the set of contained {@link Keyword}s.
-   * 
-   * @return the set of contained {@link Keyword}s
    */
   public Set<Keyword> getKeywords() {
     return keywords.keySet();
   }
 
   /**
+   * Returns additional campaign-level settings for keyword evaluation.
+   */
+  public CampaignConfiguration getCampaignConfiguration() {
+    return campaignConfiguration;
+  }
+  
+  /**
    * Returns the distinct texts of all containing {@link Keyword}s.
-   * 
-   * @return the distinct texts of all containing {@link Keyword}s
    */
   public Set<String> getContainingKeywordTexts() {
     Set<String> keywordTexts = new HashSet<String>();
@@ -116,8 +115,6 @@ public class KeywordCollection extends AdditionalInfoHolder implements Iterable<
 
   /**
    * Returns the distinct match types of all containing {@link Keyword}s.
-   * 
-   * @return the distinct match types of all containing {@link Keyword}s
    */
   public Set<KeywordMatchType> getContainingMatchTypes() {
     Set<KeywordMatchType> matchTypes = new HashSet<KeywordMatchType>();
@@ -131,38 +128,28 @@ public class KeywordCollection extends AdditionalInfoHolder implements Iterable<
 
   /**
    * Returns a list of all contained {@link KeywordInfo}s sorted by score (best first).
-   * 
-   * @return a list of all contained {@link KeywordInfo}s sorted by score (best first)
    */
   public List<KeywordInfo> getListSortedByScore() {
-    List<KeywordInfo> keywordInfoList = new ArrayList<KeywordInfo>(keywords.values());
-    Collections.sort(keywordInfoList, new ScoreComparator());
-    return Collections.unmodifiableList(keywordInfoList);
+    return Ordering.from(new ScoreComparator()).sortedCopy(keywords.values());
   }
   
   /**
    * Returns a list of all contained {@link KeywordInfo}s sorted by keywords (alphabetic order).
-   * 
-   * @return a list of all contained {@link KeywordInfo}s sorted by keywords (alphabetic order)
    */
   public List<KeywordInfo> getListSortedByKeyword() {
-    List<KeywordInfo> keywordInfoList = new ArrayList<KeywordInfo>(keywords.values());
-    Collections.sort(keywordInfoList, new KeywordComparator());
-    return Collections.unmodifiableList(keywordInfoList);
+    return Ordering.from(new KeywordComparator()).sortedCopy(keywords.values());
   }
 
   /**
    * Returns the best x {@link KeywordInfo}s in this collection.
    * 
    * @param count the number of {@link KeywordInfo}s to return (=x)
-   * @return the best x {@link KeywordInfo}s
    */
   public KeywordCollection getBest(int count) {
-    List<KeywordInfo> sortedList = getListSortedByScore();
-    KeywordCollection bestKeywords = new KeywordCollection(this);
-    for (int i = 0; i < count && i < sortedList.size(); i++) {
-      bestKeywords.add(sortedList.get(i));
-    }
+    List<KeywordInfo> bestKeywordList =
+        Ordering.from(new ScoreComparator()).greatestOf(keywords.values(), count);
+    KeywordCollection bestKeywords = new KeywordCollection(campaignConfiguration);
+    bestKeywords.addAll(bestKeywordList);
     return bestKeywords;
   }
 
@@ -190,12 +177,6 @@ public class KeywordCollection extends AdditionalInfoHolder implements Iterable<
   
   @Override
   public String toString() {
-    StringBuilder out = new StringBuilder();
-
-    for (KeywordInfo keyword : keywords.values()) {
-      out.append(keyword.toString()).append(SystemUtils.LINE_SEPARATOR);
-    }
-
-    return out.toString();
+    return JOINER.join(keywords.values()) + SystemUtils.LINE_SEPARATOR;
   }
 }

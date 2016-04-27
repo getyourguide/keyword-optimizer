@@ -28,28 +28,36 @@ public class SimpleSeedGenerator extends AbstractSeedGenerator {
   /**
    * Creates a new {@link SimpleSeedGenerator} containing no keywords (these have to be added by
    * {@link #addKeyword(String)}).
+   *
+   * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
-  public SimpleSeedGenerator() {
+  public SimpleSeedGenerator(CampaignConfiguration campaignConfiguration) {
+    super(campaignConfiguration);
     keywords = new ArrayList<String>();
   }
 
   /**
    * Creates a new {@link SimpleSeedGenerator} containing a list of given keywords.
-   * 
+   *
+   * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    * @param keywords the keywords (plain text) to use
    */
-  public SimpleSeedGenerator(Collection<String> keywords) {
+  public SimpleSeedGenerator(
+      CampaignConfiguration campaignConfiguration, Collection<String> keywords) {
+    super(campaignConfiguration);
     this.keywords = new ArrayList<String>(keywords);
   }
 
   /**
    * Creates a new {@link SimpleSeedGenerator} containing a list of given keywords.
-   * 
+   *
+   * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    * @param keywords the keywords (plain text) to use
    */
-  public SimpleSeedGenerator(String... keywords) {
+  public SimpleSeedGenerator(CampaignConfiguration campaignConfiguration, String... keywords) {
+    super(campaignConfiguration);
     this.keywords = new ArrayList<String>(keywords.length);
-  
+
     for (String keyword : keywords) {
       this.keywords.add(keyword);
     }

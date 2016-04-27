@@ -16,6 +16,7 @@ package com.google.api.ads.adwords.keywordoptimizer;
 
 import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
 import com.google.api.ads.adwords.axis.v201603.cm.Money;
+import com.google.api.ads.adwords.keywordoptimizer.CampaignConfiguration.CampaignConfigurationBuilder;
 import com.google.api.ads.common.lib.conf.ConfigurationLoadException;
 import com.google.api.ads.common.lib.exception.OAuthException;
 import com.google.api.ads.common.lib.exception.ValidationException;
@@ -140,11 +141,9 @@ public class KeywordOptimizer {
 
     OptimizationContext context = createContext(cmdLine);
 
-    SeedGenerator seedGenerator = getSeedGenerator(cmdLine, context);
-    addCpc(cmdLine, seedGenerator);
+    CampaignConfiguration campaignConfiguration = getCampaignConfiguration(cmdLine);
+    SeedGenerator seedGenerator = getSeedGenerator(cmdLine, context, campaignConfiguration);
     addMatchTypes(cmdLine, seedGenerator);
-    addLocations(cmdLine, seedGenerator);
-    addLanguages(cmdLine, seedGenerator);
 
     AlternativesFinder alternativesFinder = createObjectBasedOnProperty(
         AlternativesFinder.class, KeywordOptimizerProperty.AlternativesFinderClass, context);
@@ -378,77 +377,60 @@ public class KeywordOptimizer {
   }
 
   /**
-   * Adds the maximum CPC specified from the command line to the {@link SeedGenerator}.
-   *
+   * Read the campaign settings (max. Cpc, additional criteria) from the command line.
    * @param cmdLine the parsed command line parameters
-   * @param seedGenerator the previously constructed {@link SeedGenerator}
-   * @throws KeywordOptimizerException in case no max. CPC has been specified
+   * @return {@link CampaignConfiguration} including the specified settings
    */
-  private static void addCpc(CommandLine cmdLine, SeedGenerator seedGenerator)
-      throws KeywordOptimizerException {
+  private static CampaignConfiguration getCampaignConfiguration(CommandLine cmdLine) {
+    CampaignConfigurationBuilder builder = CampaignConfiguration.builder();
+    
+    // Read the max. Cpc parameter.
     double cpc = Double.parseDouble(cmdLine.getOptionValue("cpc"));
-
     Money maxCpc = new Money();
     maxCpc.setMicroAmount((long) (cpc * 1000000d));
+    builder.withMaxCpc(maxCpc);
+    
+    // Read the language parameter.
+    if (cmdLine.hasOption("lang")) {
+      for (String language : cmdLine.getOptionValues("lang")) {
+        long languageId = Long.parseLong(language);
 
-    log("Using max cpc: " + cpc);
-    seedGenerator.setMaxCpc(maxCpc);
+        log("Using language: " + languageId);
+        builder.withLanguage(languageId);
+      }
+    }
+
+    // Read the location parameter.
+    if (cmdLine.hasOption("loc")) {
+      for (String location : cmdLine.getOptionValues("loc")) {
+        long loc = Long.parseLong(location);
+  
+        log("Using location: " + loc);
+        builder.withLocation(loc);
+      }
+    }
+    
+    return builder.build();
   }
-
-  /**
-   * Adds the languages specified from the command line to the {@link SeedGenerator}.
-   *
-   * @param cmdLine the parsed command line parameters
-   * @param seedGenerator the previously constructed {@link SeedGenerator}
-   */
-  private static void addLanguages(CommandLine cmdLine, SeedGenerator seedGenerator) {
-    if (!cmdLine.hasOption("lang")) {
-      return;
-    }
-
-    for (String language : cmdLine.getOptionValues("lang")) {
-      long lang = Long.parseLong(language);
-
-      log("Using language: " + lang);
-      seedGenerator.addAdditionalLanguage(lang);
-    }
-  }
-
-  /**
-   * Adds the locations specified from the command line to the {@link SeedGenerator}.
-   *
-   * @param cmdLine the parsed command line parameters
-   * @param seedGenerator the previously constructed {@link SeedGenerator}
-   */
-  private static void addLocations(CommandLine cmdLine, SeedGenerator seedGenerator) {
-    if (!cmdLine.hasOption("loc")) {
-      return;
-    }
-
-    for (String location : cmdLine.getOptionValues("loc")) {
-      long loc = Long.parseLong(location);
-
-      log("Using location: " + loc);
-      seedGenerator.addAdditionalLocation(loc);
-    }
-  }
-
+  
   /**
    * Creates the seed generator based on the command line options.
    *
    * @param cmdLine the parsed command line parameters
    * @param context holding shared objects during the optimization process
+   * @param campaignSettings additional campaign-level settings for keyword evaluation
    * @return a {@link SeedGenerator} object
    * @throws KeywordOptimizerException in case of an error constructing the seed generator
    */
-  private static SeedGenerator getSeedGenerator(CommandLine cmdLine, OptimizationContext context)
+  private static SeedGenerator getSeedGenerator(
+      CommandLine cmdLine, OptimizationContext context, CampaignConfiguration campaignSettings)
       throws KeywordOptimizerException {
     Option seedOption = getOnlySeedOption(cmdLine);
 
     if ("sk".equals(seedOption.getOpt())) {
       String[] keywords = cmdLine.getOptionValues("sk");
 
-      SimpleSeedGenerator seedGenerator = new SimpleSeedGenerator();
+      SimpleSeedGenerator seedGenerator = new SimpleSeedGenerator(campaignSettings);
       for (String keyword : keywords) {
         log("Using seed keyword: " + keyword);
         seedGenerator.addKeyword(keyword);
@@ -458,7 +440,7 @@ public class KeywordOptimizer {
     } else if ("skf".equals(seedOption.getOpt())) {
       List<String> keywords = loadFromFile(cmdLine.getOptionValue("skf"));
 
-      SimpleSeedGenerator seedGenerator = new SimpleSeedGenerator();
+      SimpleSeedGenerator seedGenerator = new SimpleSeedGenerator(campaignSettings);
       for (String keyword : keywords) {
         log("Using seed keyword: " + keyword);
         seedGenerator.addKeyword(keyword);
@@ -468,7 +450,8 @@ public class KeywordOptimizer {
     } else if ("st".equals(seedOption.getOpt())) {
       String[] keywords = cmdLine.getOptionValues("st");
 
-      TisSearchTermsSeedGenerator seedGenerator = new TisSearchTermsSeedGenerator(context, null);
+      TisSearchTermsSeedGenerator seedGenerator =
+          new TisSearchTermsSeedGenerator(context, campaignSettings);
       for (String keyword : keywords) {
         log("Using seed search term: " + keyword);
         seedGenerator.addSearchTerm(keyword);
@@ -478,7 +461,8 @@ public class KeywordOptimizer {
     } else if ("stf".equals(seedOption.getOpt())) {
       List<String> terms = loadFromFile(cmdLine.getOptionValue("skf"));
 
-      TisSearchTermsSeedGenerator seedGenerator = new TisSearchTermsSeedGenerator(context, null);
+      TisSearchTermsSeedGenerator seedGenerator =
+          new TisSearchTermsSeedGenerator(context, campaignSettings);
       for (String term : terms) {
         log("Using seed serach term: " + term);
         seedGenerator.addSearchTerm(term);
@@ -488,7 +472,7 @@ public class KeywordOptimizer {
     } else if ("su".equals(seedOption.getOpt())) {
       String[] urls = cmdLine.getOptionValues("su");
 
-      TisUrlSeedGenerator seedGenerator = new TisUrlSeedGenerator(context, null);
+      TisUrlSeedGenerator seedGenerator = new TisUrlSeedGenerator(context, campaignSettings);
       for (String url : urls) {
         log("Using seed url: " + url);
         seedGenerator.addUrl(url);
@@ -498,7 +482,7 @@ public class KeywordOptimizer {
     } else if ("suf".equals(seedOption.getOpt())) {
       List<String> urls = loadFromFile(cmdLine.getOptionValue("suf"));
 
-      TisUrlSeedGenerator seedGenerator = new TisUrlSeedGenerator(context, null);
+      TisUrlSeedGenerator seedGenerator = new TisUrlSeedGenerator(context, campaignSettings);
       for (String url : urls) {
         log("Using seed url: " + url);
         seedGenerator.addUrl(url);
@@ -509,7 +493,7 @@ public class KeywordOptimizer {
       int category = Integer.parseInt(seedOption.getValue());
       log("Using seed category: " + category);
       TisCategorySeedGenerator seedGenerator =
-          new TisCategorySeedGenerator(context, category, null);
+          new TisCategorySeedGenerator(context, category, campaignSettings);
       return seedGenerator;
     }
 

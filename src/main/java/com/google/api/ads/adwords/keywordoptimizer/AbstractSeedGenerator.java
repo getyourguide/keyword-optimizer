@@ -16,34 +16,27 @@ package com.google.api.ads.adwords.keywordoptimizer;
 
 import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
 import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201603.cm.Money;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Base seed generator class providing some of the general functionality used by specific seed
  * generators.
  */
-public abstract class AbstractSeedGenerator extends AdditionalInfoHolder implements SeedGenerator {
-  protected final List<KeywordMatchType> matchTypes;
+public abstract class AbstractSeedGenerator implements SeedGenerator {
+  private final CampaignConfiguration campaignConfiguration;
+  private final Set<KeywordMatchType> matchTypes;
   
   /**
-   * Creates a new {@link AbstractSeedGenerator} using a given CPC.
-   * 
-   * @param maxCpc the maximum cpc (cost per click) as a {@link Money} object
+   * Creates a new {@link AbstractSeedGenerator} using the given settings.
+   *
+   * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
-  public AbstractSeedGenerator(Money maxCpc) {
-    super(maxCpc);
-    this.matchTypes = new ArrayList<KeywordMatchType>();
-  }
-
-  /**
-   * Creates a new {@link AbstractSeedGenerator}.
-   */
-  public AbstractSeedGenerator() {
-    this(null);
+  public AbstractSeedGenerator(CampaignConfiguration campaignConfiguration) {
+    this.campaignConfiguration = campaignConfiguration;
+    this.matchTypes = new HashSet<KeywordMatchType>();
   }
 
   /**
@@ -57,11 +50,10 @@ public abstract class AbstractSeedGenerator extends AdditionalInfoHolder impleme
   protected abstract Collection<String> getKeywords() throws KeywordOptimizerException;
 
   @Override
-  public KeywordCollection generate() throws KeywordOptimizerException {
+  public final KeywordCollection generate() throws KeywordOptimizerException {
     Collection<String> keywords = getKeywords();
 
-    KeywordCollection keywordCollection = new KeywordCollection(getMaxCpc());
-    keywordCollection.addAdditionalCriteria(getAdditionalCriteria());
+    KeywordCollection keywordCollection = new KeywordCollection(campaignConfiguration);
 
     for (String keywordText : keywords) {
       for (KeywordMatchType matchType : matchTypes) {
@@ -71,6 +63,11 @@ public abstract class AbstractSeedGenerator extends AdditionalInfoHolder impleme
     }
 
     return keywordCollection;
+  }
+  
+  @Override
+  public CampaignConfiguration getCampaignConfiguration() {
+    return campaignConfiguration;
   }
 
   /**

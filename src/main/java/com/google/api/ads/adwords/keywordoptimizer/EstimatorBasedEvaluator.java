@@ -36,7 +36,7 @@ public class EstimatorBasedEvaluator implements Evaluator {
 
   @Override
   public KeywordCollection evaluate(KeywordCollection keywords) throws KeywordOptimizerException {
-    KeywordCollection evaluations = new KeywordCollection(keywords);
+    KeywordCollection evaluations = new KeywordCollection(keywords.getCampaignConfiguration());
 
     KeywordCollection estimates = estimator.estimate(keywords);
 

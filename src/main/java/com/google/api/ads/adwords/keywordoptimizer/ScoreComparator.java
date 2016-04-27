@@ -17,8 +17,8 @@ package com.google.api.ads.adwords.keywordoptimizer;
 import java.util.Comparator;
 
 /**
- * Comparator for comparing {@link KeywordInfo}s by score. It sorts keywords in decreasing order of
- * their score, best ones first.
+ * Comparator for comparing {@link KeywordInfo}s by score. It sorts keywords in increasing order of
+ * their score, worst ones first.
  */
 public class ScoreComparator implements Comparator<KeywordInfo> {
   @Override
@@ -27,7 +27,6 @@ public class ScoreComparator implements Comparator<KeywordInfo> {
       return 0;
     }
 
-    // Change argument order to reverse ordering (highest score first).
-    return Double.compare(o2.getScore(), o1.getScore());
+    return Double.compare(o1.getScore(), o2.getScore());
   }
 }

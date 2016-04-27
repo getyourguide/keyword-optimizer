@@ -70,13 +70,19 @@ public class KeywordCollectionSimpleTest {
     maxCpc = new Money();
     maxCpc.setMicroAmount(1000000L); // 1 usd
 
-    keywords = new KeywordCollection(maxCpc);
+    CampaignConfiguration campaignSettings = CampaignConfiguration.builder()
+        .withMaxCpc(maxCpc)
+        .withCriterion(english)
+        .withCriterion(newYork)
+        .build();
+    keywords = new KeywordCollection(campaignSettings);
+    
+    keywords = new KeywordCollection(campaignSettings);
     keywords.add(new KeywordInfo(plumbing, null, null));
     keywords.add(new KeywordInfo(plumbingBroad, null, null));
     keywords.add(new KeywordInfo(plumbingSpecialist, null, null));
 
-    keywords.addAdditionalCriterion(newYork);
-    keywords.addAdditionalCriterion(english);
+
   }
 
   /**
@@ -110,9 +116,9 @@ public class KeywordCollectionSimpleTest {
    */
   @Test
   public void checkContainsAdditionalCriterions() {
-    assertTrue(keywords.getAdditionalCriteria().contains(newYork));
-    assertTrue(keywords.getAdditionalCriteria().contains(english));
-    assertEquals(2, keywords.getAdditionalCriteria().size());
+    assertTrue(keywords.getCampaignConfiguration().getAdditionalCriteria().contains(newYork));
+    assertTrue(keywords.getCampaignConfiguration().getAdditionalCriteria().contains(english));
+    assertEquals(2, keywords.getCampaignConfiguration().getAdditionalCriteria().size());
   }
 
   /**

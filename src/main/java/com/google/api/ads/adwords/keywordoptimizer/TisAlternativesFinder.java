@@ -58,10 +58,10 @@ public class TisAlternativesFinder implements AlternativesFinder {
   }
 
   @Override
-  public KeywordCollection find(KeywordCollection keywords) throws KeywordOptimizerException {
+  public KeywordCollection derive(KeywordCollection keywords) throws KeywordOptimizerException {
     Collection<String> keywordTexts = getKeywordTexts(keywords);
 
-    KeywordCollection alternatives = new KeywordCollection(keywords);
+    KeywordCollection alternatives = new KeywordCollection(keywords.getCampaignConfiguration());
     for (String keywordText : keywordTexts) {
       for (KeywordMatchType matchType : keywords.getContainingMatchTypes()) {
         Keyword newKeyword = KeywordOptimizerUtil.createKeyword(keywordText, matchType);
@@ -96,7 +96,7 @@ public class TisAlternativesFinder implements AlternativesFinder {
     searchParameters.add(relatedToQuerySearchParameter);
 
     // Now add all other criteria.
-    searchParameters.addAll(KeywordOptimizerUtil.toSearchParameters(keywords
+    searchParameters.addAll(KeywordOptimizerUtil.toSearchParameters(keywords.getCampaignConfiguration()
         .getAdditionalCriteria()));
 
     selector.setSearchParameters(searchParameters.toArray(new SearchParameter[] {}));

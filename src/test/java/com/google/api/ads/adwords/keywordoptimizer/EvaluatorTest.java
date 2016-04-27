@@ -64,8 +64,11 @@ public class EvaluatorTest {
 
     maxCpc = new Money();
     maxCpc.setMicroAmount(1000000L); // 1 usd
-
-    keywords = new KeywordCollection(maxCpc);
+    
+    CampaignConfiguration campaignSettings = CampaignConfiguration.builder()
+        .withMaxCpc(maxCpc)
+        .build();
+    keywords = new KeywordCollection(campaignSettings);
     keywords.add(new KeywordInfo(plumbing, null, null));
     keywords.add(new KeywordInfo(plumbingBroad, null, null));
     keywords.add(new KeywordInfo(plumbingSpecialist, null, null));
@@ -160,7 +163,7 @@ public class EvaluatorTest {
   private class MockTrafficEstimator implements TrafficEstimator {
     @Override
     public KeywordCollection estimate(KeywordCollection keywords) {
-      KeywordCollection estimates = new KeywordCollection(keywords);
+      KeywordCollection estimates = new KeywordCollection(keywords.getCampaignConfiguration());
 
       for (KeywordInfo keyword : keywords) {
         TrafficEstimate te = new TrafficEstimate(minStats, maxStats);

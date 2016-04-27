@@ -66,7 +66,10 @@ public class KeywordCollectionAdvancedTest {
     maxCpc = new Money();
     maxCpc.setMicroAmount(1000000L); // 1 usd
 
-    keywords = new KeywordCollection(maxCpc);
+    CampaignConfiguration campaignSettings = CampaignConfiguration.builder()
+        .withMaxCpc(maxCpc)
+        .build();
+    keywords = new KeywordCollection(campaignSettings);
     keywords.add(new KeywordInfo(gamma, null, 4d));
     keywords.add(new KeywordInfo(beta, null, 1d));
     keywords.add(new KeywordInfo(alpha, null, 3d));
@@ -95,10 +98,10 @@ public class KeywordCollectionAdvancedTest {
   public void checkScoreComparator() {
     List<KeywordInfo> sortedKeywords = keywords.getListSortedByScore();
     
-    assertEquals(gamma, sortedKeywords.get(0).getKeyword());
-    assertEquals(alpha, sortedKeywords.get(1).getKeyword());
-    assertEquals(betaBroad, sortedKeywords.get(2).getKeyword());
-    assertEquals(beta, sortedKeywords.get(3).getKeyword());
+    assertEquals(beta, sortedKeywords.get(0).getKeyword());
+    assertEquals(betaBroad, sortedKeywords.get(1).getKeyword());
+    assertEquals(alpha, sortedKeywords.get(2).getKeyword());
+    assertEquals(gamma, sortedKeywords.get(3).getKeyword());
   }
   
   /**

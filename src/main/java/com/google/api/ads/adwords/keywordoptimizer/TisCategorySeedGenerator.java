@@ -14,7 +14,6 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.Money;
 import com.google.api.ads.adwords.axis.v201603.cm.Paging;
 import com.google.api.ads.adwords.axis.v201603.o.AttributeType;
 import com.google.api.ads.adwords.axis.v201603.o.CategoryProductsAndServicesSearchParameter;
@@ -27,8 +26,6 @@ import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaService;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 /**
  * Creates a set of seed keywords derived from a given products and services category using the
  * {@link TargetingIdeaService} (see
@@ -38,15 +35,16 @@ public class TisCategorySeedGenerator extends TisBasedSeedGenerator {
   private final int categoryId;
 
   /**
-   * Creates a new {@link TisCategorySeedGenerator} using the given category id
-   * (see https://developers.google.com/adwords/api/docs/appendix/productsservices).
-   * 
+   * Creates a new {@link TisCategorySeedGenerator} using the given category id (see
+   * https://developers.google.com/adwords/api/docs/appendix/productsservices).
+   *
+   * @param context holding shared objects during the optimization process
    * @param categoryId category id to be used
-   * @param maxCpc maximum cpc to be used for keyword evaluation
+   * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
   public TisCategorySeedGenerator(
-      OptimizationContext context, int categoryId, @Nullable Money maxCpc) {
-    super(context, maxCpc);
+      OptimizationContext context, int categoryId, CampaignConfiguration campaignConfiguration) {
+    super(context, campaignConfiguration);
     this.categoryId = categoryId;
   }
 
@@ -68,7 +66,8 @@ public class TisCategorySeedGenerator extends TisBasedSeedGenerator {
     searchParameters.add(categoryParameter);
 
     // Now add all other criteria.
-    searchParameters.addAll(KeywordOptimizerUtil.toSearchParameters(getAdditionalCriteria()));
+    searchParameters.addAll(
+        KeywordOptimizerUtil.toSearchParameters(getCampaignConfiguration().getAdditionalCriteria()));
 
     selector.setSearchParameters(searchParameters.toArray(new SearchParameter[] {}));
 

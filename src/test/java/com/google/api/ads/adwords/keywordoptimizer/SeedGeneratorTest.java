@@ -32,7 +32,8 @@ public class SeedGeneratorTest {
    */
   @Test
   public void checkCreateAllPossibilities() throws KeywordOptimizerException {
-    SimpleSeedGenerator seedGenerator = new SimpleSeedGenerator();
+    CampaignConfiguration campaignSettings = CampaignConfiguration.builder().build();
+    SimpleSeedGenerator seedGenerator = new SimpleSeedGenerator(campaignSettings);
     seedGenerator.addKeyword("plumbing");
     seedGenerator.addKeyword("plumber");
 

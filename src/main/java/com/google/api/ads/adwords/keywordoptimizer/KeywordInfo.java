@@ -33,8 +33,8 @@ public class KeywordInfo {
    * Creates a new {@link KeywordInfo} object with the given attributes.
    * 
    * @param keyword the keyword itself
-   * @param estimate the estimated traffic statistics (can be null)
-   * @param score the quality score (can be null)
+   * @param estimate the estimated traffic statistics
+   * @param score the quality score
    */
   public KeywordInfo(Keyword keyword, @Nullable TrafficEstimate estimate, @Nullable Double score) {
     this.keyword = keyword;
