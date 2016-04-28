@@ -44,8 +44,10 @@ import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * Main class for this tool, taking command line parameters and starting the optimization process
@@ -142,8 +144,9 @@ public class KeywordOptimizer {
     OptimizationContext context = createContext(cmdLine);
 
     CampaignConfiguration campaignConfiguration = getCampaignConfiguration(cmdLine);
-    SeedGenerator seedGenerator = getSeedGenerator(cmdLine, context, campaignConfiguration);
-    addMatchTypes(cmdLine, seedGenerator);
+    Set<KeywordMatchType> matchTypes = getMatchTypes(cmdLine);
+    SeedGenerator seedGenerator =
+        getSeedGenerator(cmdLine, context, matchTypes, campaignConfiguration);
 
     AlternativesFinder alternativesFinder = createObjectBasedOnProperty(
         AlternativesFinder.class, KeywordOptimizerProperty.AlternativesFinderClass, context);
@@ -363,17 +366,19 @@ public class KeywordOptimizer {
    * Adds the match types specified from the command line to the {@link SeedGenerator}.
    *
    * @param cmdLine the parsed command line parameters
-   * @param seedGenerator the previously constructed {@link SeedGenerator}
+   * @return the match types for creating the seed keywords
    * @throws KeywordOptimizerException in case no match type has been specified
    */
-  private static void addMatchTypes(CommandLine cmdLine, SeedGenerator seedGenerator)
+  private static Set<KeywordMatchType> getMatchTypes(CommandLine cmdLine)
       throws KeywordOptimizerException {
+    Set<KeywordMatchType> matchTypes = new HashSet<KeywordMatchType>();
     for (String matchType : cmdLine.getOptionValues("m")) {
       KeywordMatchType mt = KeywordMatchType.fromString(matchType);
 
       log("Using match type: " + mt);
-      seedGenerator.addMatchType(mt);
+      matchTypes.add(mt);
     }
+    return matchTypes;
   }
 
   /**
@@ -418,19 +423,23 @@ public class KeywordOptimizer {
    *
    * @param cmdLine the parsed command line parameters
    * @param context holding shared objects during the optimization process
+   * @param matchTypes the match types for creating the seed keywords
    * @param campaignSettings additional campaign-level settings for keyword evaluation
    * @return a {@link SeedGenerator} object
    * @throws KeywordOptimizerException in case of an error constructing the seed generator
    */
   private static SeedGenerator getSeedGenerator(
-      CommandLine cmdLine, OptimizationContext context, CampaignConfiguration campaignSettings)
+      CommandLine cmdLine,
+      OptimizationContext context,
+      Set<KeywordMatchType> matchTypes,
+      CampaignConfiguration campaignSettings)
       throws KeywordOptimizerException {
     Option seedOption = getOnlySeedOption(cmdLine);
 
     if ("sk".equals(seedOption.getOpt())) {
       String[] keywords = cmdLine.getOptionValues("sk");
 
-      SimpleSeedGenerator seedGenerator = new SimpleSeedGenerator(campaignSettings);
+      SimpleSeedGenerator seedGenerator = new SimpleSeedGenerator(matchTypes, campaignSettings);
       for (String keyword : keywords) {
         log("Using seed keyword: " + keyword);
         seedGenerator.addKeyword(keyword);
@@ -440,7 +449,7 @@ public class KeywordOptimizer {
     } else if ("skf".equals(seedOption.getOpt())) {
       List<String> keywords = loadFromFile(cmdLine.getOptionValue("skf"));
 
-      SimpleSeedGenerator seedGenerator = new SimpleSeedGenerator(campaignSettings);
+      SimpleSeedGenerator seedGenerator = new SimpleSeedGenerator(matchTypes, campaignSettings);
       for (String keyword : keywords) {
         log("Using seed keyword: " + keyword);
         seedGenerator.addKeyword(keyword);
@@ -451,7 +460,7 @@ public class KeywordOptimizer {
       String[] keywords = cmdLine.getOptionValues("st");
 
       TisSearchTermsSeedGenerator seedGenerator =
-          new TisSearchTermsSeedGenerator(context, campaignSettings);
+          new TisSearchTermsSeedGenerator(context, matchTypes, campaignSettings);
       for (String keyword : keywords) {
         log("Using seed search term: " + keyword);
         seedGenerator.addSearchTerm(keyword);
@@ -462,7 +471,7 @@ public class KeywordOptimizer {
       List<String> terms = loadFromFile(cmdLine.getOptionValue("skf"));
 
       TisSearchTermsSeedGenerator seedGenerator =
-          new TisSearchTermsSeedGenerator(context, campaignSettings);
+          new TisSearchTermsSeedGenerator(context, matchTypes, campaignSettings);
       for (String term : terms) {
         log("Using seed serach term: " + term);
         seedGenerator.addSearchTerm(term);
@@ -472,7 +481,8 @@ public class KeywordOptimizer {
     } else if ("su".equals(seedOption.getOpt())) {
       String[] urls = cmdLine.getOptionValues("su");
 
-      TisUrlSeedGenerator seedGenerator = new TisUrlSeedGenerator(context, campaignSettings);
+      TisUrlSeedGenerator seedGenerator =
+          new TisUrlSeedGenerator(context, matchTypes, campaignSettings);
       for (String url : urls) {
         log("Using seed url: " + url);
         seedGenerator.addUrl(url);
@@ -482,7 +492,8 @@ public class KeywordOptimizer {
     } else if ("suf".equals(seedOption.getOpt())) {
       List<String> urls = loadFromFile(cmdLine.getOptionValue("suf"));
 
-      TisUrlSeedGenerator seedGenerator = new TisUrlSeedGenerator(context, campaignSettings);
+      TisUrlSeedGenerator seedGenerator =
+          new TisUrlSeedGenerator(context, matchTypes, campaignSettings);
       for (String url : urls) {
         log("Using seed url: " + url);
         seedGenerator.addUrl(url);
@@ -493,7 +504,7 @@ public class KeywordOptimizer {
       int category = Integer.parseInt(seedOption.getValue());
       log("Using seed category: " + category);
       TisCategorySeedGenerator seedGenerator =
-          new TisCategorySeedGenerator(context, category, campaignSettings);
+          new TisCategorySeedGenerator(context, category, matchTypes, campaignSettings);
       return seedGenerator;
     }
 

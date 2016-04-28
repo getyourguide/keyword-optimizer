@@ -14,6 +14,7 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
+import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
 import com.google.api.ads.adwords.axis.v201603.cm.Paging;
 import com.google.api.ads.adwords.axis.v201603.o.AttributeType;
 import com.google.api.ads.adwords.axis.v201603.o.CategoryProductsAndServicesSearchParameter;
@@ -25,6 +26,7 @@ import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Creates a set of seed keywords derived from a given products and services category using the
@@ -40,11 +42,15 @@ public class TisCategorySeedGenerator extends TisBasedSeedGenerator {
    *
    * @param context holding shared objects during the optimization process
    * @param categoryId category id to be used
+   * @param matchTypes match types to be used for seed keyword creation
    * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
   public TisCategorySeedGenerator(
-      OptimizationContext context, int categoryId, CampaignConfiguration campaignConfiguration) {
-    super(context, campaignConfiguration);
+      OptimizationContext context,
+      int categoryId,
+      Set<KeywordMatchType> matchTypes,
+      CampaignConfiguration campaignConfiguration) {
+    super(context, matchTypes, campaignConfiguration);
     this.categoryId = categoryId;
   }
 

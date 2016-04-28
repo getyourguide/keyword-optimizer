@@ -14,8 +14,6 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
-
 /**
  * A {@link SeedGenerator} creates a set of initial keywords. Each implementation defines separately
  * how this is done (e.g. for a URL or category), but has to make sure the additional information 
@@ -37,12 +35,4 @@ public interface SeedGenerator {
    * @return additional campaign settings
    */
   CampaignConfiguration getCampaignConfiguration();
-
-  /**
-   * Adds a keyword match type to the generator. Typically the generator will create keywords for
-   * each of the specified match types.
-   * 
-   * @param matchType the {@link KeywordMatchType} to be added
-   */
-  void addMatchType(KeywordMatchType matchType);
 }

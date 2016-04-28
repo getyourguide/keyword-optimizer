@@ -14,9 +14,12 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
+import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * Simple implementation of a {@link SeedGenerator} that takes keywords as plain strings and returns
@@ -29,33 +32,42 @@ public class SimpleSeedGenerator extends AbstractSeedGenerator {
    * Creates a new {@link SimpleSeedGenerator} containing no keywords (these have to be added by
    * {@link #addKeyword(String)}).
    *
+   * @param matchTypes match types to be used for seed keyword creation
    * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
-  public SimpleSeedGenerator(CampaignConfiguration campaignConfiguration) {
-    super(campaignConfiguration);
+  public SimpleSeedGenerator(
+      Set<KeywordMatchType> matchTypes, CampaignConfiguration campaignConfiguration) {
+    super(matchTypes, campaignConfiguration);
     keywords = new ArrayList<String>();
   }
 
   /**
    * Creates a new {@link SimpleSeedGenerator} containing a list of given keywords.
    *
+   * @param matchTypes match types to be used for seed keyword creation
    * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    * @param keywords the keywords (plain text) to use
    */
   public SimpleSeedGenerator(
-      CampaignConfiguration campaignConfiguration, Collection<String> keywords) {
-    super(campaignConfiguration);
+      Set<KeywordMatchType> matchTypes,
+      CampaignConfiguration campaignConfiguration,
+      Collection<String> keywords) {
+    super(matchTypes, campaignConfiguration);
     this.keywords = new ArrayList<String>(keywords);
   }
 
   /**
    * Creates a new {@link SimpleSeedGenerator} containing a list of given keywords.
    *
+   * @param matchTypes match types to be used for seed keyword creation
    * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    * @param keywords the keywords (plain text) to use
    */
-  public SimpleSeedGenerator(CampaignConfiguration campaignConfiguration, String... keywords) {
-    super(campaignConfiguration);
+  public SimpleSeedGenerator(
+      Set<KeywordMatchType> matchTypes,
+      CampaignConfiguration campaignConfiguration,
+      String... keywords) {
+    super(matchTypes, campaignConfiguration);
     this.keywords = new ArrayList<String>(keywords.length);
 
     for (String keyword : keywords) {
@@ -70,7 +82,7 @@ public class SimpleSeedGenerator extends AbstractSeedGenerator {
 
   /**
    * Adds a new plain text keyword to the generator.
-   * 
+   *
    * @param keyword the plain text keyword to be added
    */
   public void addKeyword(String keyword) {

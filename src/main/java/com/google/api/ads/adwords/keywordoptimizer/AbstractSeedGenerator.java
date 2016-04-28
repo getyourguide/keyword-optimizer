@@ -16,9 +16,9 @@ package com.google.api.ads.adwords.keywordoptimizer;
 
 import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
 import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
+import com.google.common.collect.Sets;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -32,11 +32,14 @@ public abstract class AbstractSeedGenerator implements SeedGenerator {
   /**
    * Creates a new {@link AbstractSeedGenerator} using the given settings.
    *
+   * @param matchTypes match types to be used for seed keyword creation (typically an implementing
+   * class should create each keyword for each of the specified match types)
    * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
-  public AbstractSeedGenerator(CampaignConfiguration campaignConfiguration) {
+  public AbstractSeedGenerator(
+      Set<KeywordMatchType> matchTypes, CampaignConfiguration campaignConfiguration) {
+    this.matchTypes = Sets.newHashSet(matchTypes);
     this.campaignConfiguration = campaignConfiguration;
-    this.matchTypes = new HashSet<KeywordMatchType>();
   }
 
   /**
@@ -68,15 +71,5 @@ public abstract class AbstractSeedGenerator implements SeedGenerator {
   @Override
   public CampaignConfiguration getCampaignConfiguration() {
     return campaignConfiguration;
-  }
-
-  /**
-   * Adds a match type for the keywords.
-   * 
-   * @param matchType the matchType to add
-   */
-  @Override
-  public void addMatchType(KeywordMatchType matchType) {
-    matchTypes.add(matchType);
   }
 }

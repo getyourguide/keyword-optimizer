@@ -14,6 +14,7 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
+import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
 import com.google.api.ads.adwords.axis.v201603.cm.Paging;
 import com.google.api.ads.adwords.axis.v201603.o.AttributeType;
 import com.google.api.ads.adwords.axis.v201603.o.IdeaType;
@@ -37,11 +38,14 @@ public class TisUrlSeedGenerator extends TisBasedSeedGenerator {
    * Creates a new {@link TisUrlSeedGenerator}. Please note that URLs have to be added separately.
    *
    * @param context holding shared objects during the optimization process
+   * @param matchTypes match types to be used for seed keyword creation
    * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
   public TisUrlSeedGenerator(
-      OptimizationContext context, CampaignConfiguration campaignConfiguration) {
-    super(context, campaignConfiguration);
+      OptimizationContext context,
+      Set<KeywordMatchType> matchTypes,
+      CampaignConfiguration campaignConfiguration) {
+    super(context, matchTypes, campaignConfiguration);
     urls = new HashSet<String>();
   }
 

@@ -17,6 +17,7 @@ package com.google.api.ads.adwords.keywordoptimizer;
 import static org.junit.Assert.assertEquals;
 
 import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
+import com.google.common.collect.Sets;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,13 +34,13 @@ public class SeedGeneratorTest {
   @Test
   public void checkCreateAllPossibilities() throws KeywordOptimizerException {
     CampaignConfiguration campaignSettings = CampaignConfiguration.builder().build();
-    SimpleSeedGenerator seedGenerator = new SimpleSeedGenerator(campaignSettings);
+    SimpleSeedGenerator seedGenerator =
+        new SimpleSeedGenerator(
+            Sets.newHashSet(
+                KeywordMatchType.BROAD, KeywordMatchType.EXACT, KeywordMatchType.PHRASE),
+            campaignSettings);
     seedGenerator.addKeyword("plumbing");
     seedGenerator.addKeyword("plumber");
-
-    seedGenerator.addMatchType(KeywordMatchType.BROAD);
-    seedGenerator.addMatchType(KeywordMatchType.EXACT);
-    seedGenerator.addMatchType(KeywordMatchType.PHRASE);
 
     KeywordCollection keywords = seedGenerator.generate();
 
