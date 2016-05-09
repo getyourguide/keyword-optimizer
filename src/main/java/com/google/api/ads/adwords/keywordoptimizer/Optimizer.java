@@ -35,14 +35,10 @@ import org.slf4j.LoggerFactory;
 public class Optimizer {
   private static final Logger logger = LoggerFactory.getLogger(Optimizer.class);
 
-  private SeedGenerator seedGenerator;
-  private AlternativesFinder alternativesFinder;
-  private Evaluator evaluator;
-  private RoundStrategy roundStrategy;
-
-  private KeywordCollection seedPopulation;
-  private KeywordCollection currentPopulation;
-  private int currentStep;
+  private final SeedGenerator seedGenerator;
+  private final AlternativesFinder alternativesFinder;
+  private final Evaluator evaluator;
+  private final RoundStrategy roundStrategy;
 
   /**
    * Creates a new {@link Optimizer} based on the given parameters.
@@ -71,19 +67,17 @@ public class Optimizer {
   public KeywordCollection optimize() throws KeywordOptimizerException {
     KeywordCollection seedKeywords = seedGenerator.generate();
 
-    seedPopulation = evaluator.evaluate(seedKeywords);
+    KeywordCollection seedPopulation = evaluator.evaluate(seedKeywords);
+    KeywordCollection currentPopulation = seedPopulation;
+    int currentStep = 0;
 
-    currentPopulation = seedPopulation;
-    currentStep = 0;
-
-    logStatus();
+    logStatus(currentPopulation, currentStep);
 
     while (!roundStrategy.isFinished(currentPopulation)) {
       currentStep++;
 
       currentPopulation = roundStrategy.nextRound(currentPopulation, alternativesFinder, evaluator);
-
-      logStatus();
+      logStatus(currentPopulation, currentStep);
     }
 
     return currentPopulation;
@@ -91,14 +85,19 @@ public class Optimizer {
 
   /**
    * Dumps the status of the current round to the logger.
+   * 
+   * @param currentPopulation the current set of keywords
+   * @param currentStep the current search step
    */
-  private void logStatus() {
-    logger.info("--- Optimization step " + currentStep + " (Avg: "
-        + currentPopulation.getAverageScore() + ") ---");
+  private static void logStatus(KeywordCollection currentPopulation, int currentStep) {
+    logger.info(
+        "--- Optimization step {} (Avg: {}) ---", currentStep, currentPopulation.getAverageScore());
 
     for (KeywordInfo evaluation : currentPopulation.getListSortedByScore()) {
       logger.debug(
-          KeywordOptimizerUtil.toString(evaluation.getKeyword()) + " -> " + evaluation.getScore());
+          "{} -> {}",
+          KeywordOptimizerUtil.toString(evaluation.getKeyword()),
+          evaluation.getScore());
     }
   }
 }

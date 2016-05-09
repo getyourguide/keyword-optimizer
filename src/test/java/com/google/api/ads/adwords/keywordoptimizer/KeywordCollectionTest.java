@@ -31,10 +31,11 @@ import org.junit.runners.JUnit4;
 import java.util.Collection;
 
 /**
- * Simple test cases for the {@link KeywordCollection} class (keyword handling only).
+ * Test cases for the {@link KeywordCollection} class regarding keyword handling (keyword texts,
+ * match types, duplicates).
  */
 @RunWith(JUnit4.class)
-public class KeywordCollectionSimpleTest {
+public class KeywordCollectionTest {
   private Keyword plumbing;
   private Keyword plumbingBroad;
   private Keyword plumbingSpecialist;
@@ -81,8 +82,6 @@ public class KeywordCollectionSimpleTest {
     keywords.add(new KeywordInfo(plumbing, null, null));
     keywords.add(new KeywordInfo(plumbingBroad, null, null));
     keywords.add(new KeywordInfo(plumbingSpecialist, null, null));
-
-
   }
 
   /**
@@ -100,7 +99,7 @@ public class KeywordCollectionSimpleTest {
    * Check all keyword texts are in there.
    */
   @Test
-  public void checkKeywordsTexts() {
+  public void checkKeywordTexts() {
     Collection<String> keywordTexts = keywords.getContainingKeywordTexts();
 
     assertTrue(keywordTexts.contains(plumbing.getText()));

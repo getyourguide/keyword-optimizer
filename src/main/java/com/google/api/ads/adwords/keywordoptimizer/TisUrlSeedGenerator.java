@@ -22,6 +22,7 @@ import com.google.api.ads.adwords.axis.v201603.o.RelatedToUrlSearchParameter;
 import com.google.api.ads.adwords.axis.v201603.o.RequestType;
 import com.google.api.ads.adwords.axis.v201603.o.SearchParameter;
 import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaSelector;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaServiceInterface;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,17 +36,20 @@ public class TisUrlSeedGenerator extends TisBasedSeedGenerator {
   private final Set<String> urls;
 
   /**
-   * Creates a new {@link TisUrlSeedGenerator}. Please note that URLs have to be added separately.
+   * Creates a new {@link TisUrlSeedGenerator} based on the given service and customer id. Please
+   * note that URLs have to be added separately.
    *
-   * @param context holding shared objects during the optimization process
+   * @param tis the API interface to the TargetingIdeaService
+   * @param clientCustomerId the AdWords customer ID
    * @param matchTypes match types to be used for seed keyword creation
    * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
   public TisUrlSeedGenerator(
-      OptimizationContext context,
+      TargetingIdeaServiceInterface tis,
+      Long clientCustomerId,
       Set<KeywordMatchType> matchTypes,
       CampaignConfiguration campaignConfiguration) {
-    super(context, matchTypes, campaignConfiguration);
+    super(tis, clientCustomerId, matchTypes, campaignConfiguration);
     urls = new HashSet<String>();
   }
 
@@ -67,7 +71,8 @@ public class TisUrlSeedGenerator extends TisBasedSeedGenerator {
 
     // Now add all other criteria.
     searchParameters.addAll(
-        KeywordOptimizerUtil.toSearchParameters(getCampaignConfiguration().getAdditionalCriteria()));
+        KeywordOptimizerUtil.toSearchParameters(
+            getCampaignConfiguration().getAdditionalCriteria()));
 
     selector.setSearchParameters(searchParameters.toArray(new SearchParameter[] {}));
 

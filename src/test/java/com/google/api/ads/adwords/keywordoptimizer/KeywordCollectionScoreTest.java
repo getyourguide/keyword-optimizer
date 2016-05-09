@@ -15,12 +15,13 @@
 package com.google.api.ads.adwords.keywordoptimizer;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
 import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
 import com.google.api.ads.adwords.axis.v201603.cm.Money;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,14 +31,19 @@ import org.junit.runners.JUnit4;
 import java.util.List;
 
 /**
- * Advanced test cases for the {@link KeywordCollection} class (estimates, sorting, ...).
+ * Test cases for the {@link KeywordCollection} class that relate to scoring (sorting, extracting
+ * the best keywords etc.).
  */
 @RunWith(JUnit4.class)
-public class KeywordCollectionAdvancedTest {
+public class KeywordCollectionScoreTest {
   private Keyword alpha;
   private Keyword beta;
   private Keyword betaBroad;
   private Keyword gamma;
+  private KeywordInfo alphaInfo;
+  private KeywordInfo betaInfo;
+  private KeywordInfo betaBroadInfo;
+  private KeywordInfo gammaInfo;
   private Money maxCpc;
 
   private KeywordCollection keywords;
@@ -50,18 +56,22 @@ public class KeywordCollectionAdvancedTest {
     alpha = new Keyword();
     alpha.setText("alpha");
     alpha.setMatchType(KeywordMatchType.EXACT);
+    alphaInfo = new KeywordInfo(alpha, null, 3d);
 
     beta = new Keyword();
     beta.setText("beta");
-    beta.setMatchType(KeywordMatchType.BROAD);
+    beta.setMatchType(KeywordMatchType.EXACT);
+    betaInfo = new KeywordInfo(beta, null, 1d);
     
     betaBroad = new Keyword();
     betaBroad.setText("beta");
-    betaBroad.setMatchType(KeywordMatchType.EXACT);
+    betaBroad.setMatchType(KeywordMatchType.BROAD);
+    betaBroadInfo = new KeywordInfo(betaBroad, null, 2d);
 
     gamma = new Keyword();
     gamma.setText("gamma");
     gamma.setMatchType(KeywordMatchType.EXACT);
+    gammaInfo = new KeywordInfo(gamma, null, 4d);
 
     maxCpc = new Money();
     maxCpc.setMicroAmount(1000000L); // 1 usd
@@ -70,10 +80,10 @@ public class KeywordCollectionAdvancedTest {
         .withMaxCpc(maxCpc)
         .build();
     keywords = new KeywordCollection(campaignSettings);
-    keywords.add(new KeywordInfo(gamma, null, 4d));
-    keywords.add(new KeywordInfo(beta, null, 1d));
-    keywords.add(new KeywordInfo(alpha, null, 3d));
-    keywords.add(new KeywordInfo(betaBroad, null, 2d));
+    keywords.add(gammaInfo);
+    keywords.add(betaInfo);
+    keywords.add(alphaInfo);
+    keywords.add(betaBroadInfo);
   }
 
   /**
@@ -81,13 +91,10 @@ public class KeywordCollectionAdvancedTest {
    * 
    */
   @Test
-  public void checkKeywortComparator() {
+  public void checkKeywordComparator() {
     List<KeywordInfo> sortedKeywords = keywords.getListSortedByKeyword();
     
-    assertEquals(alpha, sortedKeywords.get(0).getKeyword());
-    assertEquals(beta, sortedKeywords.get(1).getKeyword());
-    assertEquals(betaBroad, sortedKeywords.get(2).getKeyword());
-    assertEquals(gamma, sortedKeywords.get(3).getKeyword());
+    assertEquals(ImmutableList.of(alphaInfo, betaBroadInfo, betaInfo, gammaInfo), sortedKeywords);
   }
 
   /**
@@ -98,35 +105,36 @@ public class KeywordCollectionAdvancedTest {
   public void checkScoreComparator() {
     List<KeywordInfo> sortedKeywords = keywords.getListSortedByScore();
     
-    assertEquals(beta, sortedKeywords.get(0).getKeyword());
-    assertEquals(betaBroad, sortedKeywords.get(1).getKeyword());
-    assertEquals(alpha, sortedKeywords.get(2).getKeyword());
-    assertEquals(gamma, sortedKeywords.get(3).getKeyword());
+    assertEquals(ImmutableList.of(betaInfo, betaBroadInfo, alphaInfo, gammaInfo), sortedKeywords);
   }
   
   /**
    * Check sorting keywords by score ({@link ScoreComparator}).
-   * 
    */
   @Test
   public void checkBestX() {
-    KeywordCollection best = keywords.getBest(2);
+    // Check returning no keywords leads to an empty list.
+    assertTrue(Iterables.elementsEqual(keywords.getBest(0), ImmutableList.of()));
     
-    // The list contains only 2 as selected.
-    assertEquals(2, best.size());
-    
-    // The list contains only score >= 3.
-    for (KeywordInfo keyword : best) {
-      assertTrue(keyword.getScore() >= 3);
-    }
-    
-    // The list contains exactly the best 2 keywords.
-    assertTrue(best.contains(alpha));
-    assertTrue(best.contains(gamma));
-    
-    // The list does not contain exactly the other 2 keywords.
-    assertFalse(best.contains(beta));
-    assertFalse(best.contains(betaBroad));
+    // Check returning the best keyword works correctly.
+    assertTrue(Iterables.elementsEqual(keywords.getBest(1), ImmutableList.of(gammaInfo)));
+
+    // Check returning the best two keywords works correctly.
+    assertTrue(
+        Iterables.elementsEqual(
+            keywords.getBest(2).getListSortedByScore(), ImmutableList.of(alphaInfo, gammaInfo)));
+
+    // Check returning the best three keywords works correctly.
+    assertTrue(
+        Iterables.elementsEqual(
+            keywords.getBest(3).getListSortedByScore(),
+            ImmutableList.of(betaBroadInfo, alphaInfo, gammaInfo)));
+
+    // Check returning all keywords leads to the same elements.
+    assertTrue(Iterables.elementsEqual(keywords.getBest(4), keywords));
+
+    // Check returning more than the number of contained keywords still leads to the the same list.
+    assertTrue(Iterables.elementsEqual(keywords.getBest(5), keywords));
   }
   
   /**

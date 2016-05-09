@@ -48,19 +48,21 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
   private final Long clientCustomerId;
 
   /**
-   * Creates a new {@link TisBasedSeedGenerator}.
+   * Creates a new {@link TisBasedSeedGenerator} based on the given service and customer id.
    *
-   * @param context holding shared objects during the optimization process
+   * @param tis the API interface to the TargetingIdeaService
+   * @param clientCustomerId the AdWords customer ID
    * @param matchTypes match types to be used for seed keyword creation
    * @param campaignConfiguration additional campaign-level settings for keyword evaluation
    */
   public TisBasedSeedGenerator(
-      OptimizationContext context,
+      TargetingIdeaServiceInterface tis,
+      Long clientCustomerId,
       Set<KeywordMatchType> matchTypes,
       CampaignConfiguration campaignConfiguration) {
     super(matchTypes, campaignConfiguration);
-    tis = context.getAdwordsApiUtil().getService(TargetingIdeaServiceInterface.class);
-    clientCustomerId = context.getAdwordsApiUtil().getClientCustomerId();
+    this.tis = tis;
+    this.clientCustomerId = clientCustomerId;
   }
 
   /**

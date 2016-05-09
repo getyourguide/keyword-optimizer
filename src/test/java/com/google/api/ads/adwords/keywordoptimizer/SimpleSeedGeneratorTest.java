@@ -15,6 +15,8 @@
 package com.google.api.ads.adwords.keywordoptimizer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
 import com.google.common.collect.Sets;
@@ -23,11 +25,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.Set;
+
 /**
  * Test case for the {@link SimpleSeedGenerator} class.
  */
 @RunWith(JUnit4.class)
-public class SeedGeneratorTest {
+public class SimpleSeedGeneratorTest {
   /**
    * Check that all keywords are in there.
    */
@@ -43,9 +47,21 @@ public class SeedGeneratorTest {
     seedGenerator.addKeyword("plumber");
 
     KeywordCollection keywords = seedGenerator.generate();
+    Set<String> keywordTexts = keywords.getContainingKeywordTexts();
+    Set<KeywordMatchType> matchTypes = keywords.getContainingMatchTypes();
 
+    // Check list sizes.
     assertEquals(6, keywords.size());
-    assertEquals(2, keywords.getContainingKeywordTexts().size());
-    assertEquals(3, keywords.getContainingMatchTypes().size());
+    assertEquals(2, keywordTexts.size());
+    assertEquals(3, matchTypes.size());
+    
+    // Check contents.
+    assertTrue(keywordTexts.contains("plumbing"));
+    assertTrue(keywordTexts.contains("plumber"));
+    assertFalse(keywordTexts.contains("pipes"));
+    
+    assertTrue(matchTypes.contains(KeywordMatchType.BROAD));
+    assertTrue(matchTypes.contains(KeywordMatchType.EXACT));
+    assertTrue(matchTypes.contains(KeywordMatchType.PHRASE));
   }
 }

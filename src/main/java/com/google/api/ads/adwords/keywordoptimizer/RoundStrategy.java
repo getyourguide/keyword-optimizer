@@ -21,8 +21,8 @@ package com.google.api.ads.adwords.keywordoptimizer;
 public interface RoundStrategy {
   /**
    * Takes the population from the current round and uses the other given parameters to create the
-   * population for the next round. This method is called until isFinished returns true and should
-   * return <code>null</code> in this is the case.
+   * population for the next round. This method is called until isFinished returns true (and should
+   * return <code>null</code> in this case).
    *
    * @param currentPopulation the current keyword population
    * @param alternativesFinder for providing keyword alternatives for the best keywords

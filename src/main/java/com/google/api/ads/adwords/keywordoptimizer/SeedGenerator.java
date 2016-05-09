@@ -31,8 +31,6 @@ public interface SeedGenerator {
   
   /**
    * Returns additional campaign-level settings for keyword evaluation.
-   * 
-   * @return additional campaign settings
    */
   CampaignConfiguration getCampaignConfiguration();
 }

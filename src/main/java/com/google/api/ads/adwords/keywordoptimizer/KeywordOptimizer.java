@@ -16,6 +16,7 @@ package com.google.api.ads.adwords.keywordoptimizer;
 
 import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
 import com.google.api.ads.adwords.axis.v201603.cm.Money;
+import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaServiceInterface;
 import com.google.api.ads.adwords.keywordoptimizer.CampaignConfiguration.CampaignConfigurationBuilder;
 import com.google.api.ads.common.lib.conf.ConfigurationLoadException;
 import com.google.api.ads.common.lib.exception.OAuthException;
@@ -460,7 +461,11 @@ public class KeywordOptimizer {
       String[] keywords = cmdLine.getOptionValues("st");
 
       TisSearchTermsSeedGenerator seedGenerator =
-          new TisSearchTermsSeedGenerator(context, matchTypes, campaignSettings);
+          new TisSearchTermsSeedGenerator(
+              context.getAdwordsApiUtil().getService(TargetingIdeaServiceInterface.class),
+              context.getAdwordsApiUtil().getClientCustomerId(),
+              matchTypes,
+              campaignSettings);
       for (String keyword : keywords) {
         log("Using seed search term: " + keyword);
         seedGenerator.addSearchTerm(keyword);
@@ -471,7 +476,11 @@ public class KeywordOptimizer {
       List<String> terms = loadFromFile(cmdLine.getOptionValue("skf"));
 
       TisSearchTermsSeedGenerator seedGenerator =
-          new TisSearchTermsSeedGenerator(context, matchTypes, campaignSettings);
+          new TisSearchTermsSeedGenerator(
+              context.getAdwordsApiUtil().getService(TargetingIdeaServiceInterface.class),
+              context.getAdwordsApiUtil().getClientCustomerId(),
+              matchTypes,
+              campaignSettings);
       for (String term : terms) {
         log("Using seed serach term: " + term);
         seedGenerator.addSearchTerm(term);
@@ -482,7 +491,11 @@ public class KeywordOptimizer {
       String[] urls = cmdLine.getOptionValues("su");
 
       TisUrlSeedGenerator seedGenerator =
-          new TisUrlSeedGenerator(context, matchTypes, campaignSettings);
+          new TisUrlSeedGenerator(
+              context.getAdwordsApiUtil().getService(TargetingIdeaServiceInterface.class),
+              context.getAdwordsApiUtil().getClientCustomerId(),
+              matchTypes,
+              campaignSettings);
       for (String url : urls) {
         log("Using seed url: " + url);
         seedGenerator.addUrl(url);
@@ -493,7 +506,11 @@ public class KeywordOptimizer {
       List<String> urls = loadFromFile(cmdLine.getOptionValue("suf"));
 
       TisUrlSeedGenerator seedGenerator =
-          new TisUrlSeedGenerator(context, matchTypes, campaignSettings);
+          new TisUrlSeedGenerator(
+              context.getAdwordsApiUtil().getService(TargetingIdeaServiceInterface.class),
+              context.getAdwordsApiUtil().getClientCustomerId(),
+              matchTypes,
+              campaignSettings);
       for (String url : urls) {
         log("Using seed url: " + url);
         seedGenerator.addUrl(url);
@@ -504,7 +521,12 @@ public class KeywordOptimizer {
       int category = Integer.parseInt(seedOption.getValue());
       log("Using seed category: " + category);
       TisCategorySeedGenerator seedGenerator =
-          new TisCategorySeedGenerator(context, category, matchTypes, campaignSettings);
+          new TisCategorySeedGenerator(
+              context.getAdwordsApiUtil().getService(TargetingIdeaServiceInterface.class),
+              context.getAdwordsApiUtil().getClientCustomerId(),
+              category,
+              matchTypes,
+              campaignSettings);
       return seedGenerator;
     }
 
