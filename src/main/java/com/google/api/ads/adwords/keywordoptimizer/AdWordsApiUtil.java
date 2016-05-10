@@ -30,14 +30,19 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Properties;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -56,6 +61,15 @@ public class AdWordsApiUtil {
 
   // This callback URL will allow you to copy the token from the success screen.
   private static final String CALLBACK_URL = "urn:ietf:wg:oauth:2.0:oob";
+  
+  // Name of the user agent property in the configuration file. 
+  private static final String PROPERTY_USER_AGENT = "api.adwords.userAgent";
+  
+  // Prefix that will be added to the user-specified user agent. 
+  private static final String PREFIX_USER_AGENT = "KeywordOptimizer-";
+  
+  // Default user agent property value.
+  private static final String DEFAULT_USER_AGENT = "INSERT_USERAGENT_HERE";
 
   private static final Logger logger = LoggerFactory.getLogger(AdWordsApiUtil.class);
 
@@ -126,6 +140,43 @@ public class AdWordsApiUtil {
 
     return credential;
   }
+  
+  /**
+   * Reads and returns the user agent setting from the properties file.
+   * 
+   * @throws ConfigurationLoadException in case of an error reading the configuration file
+   * @throws ValidationException in case the user agent is not specified correctly
+   */
+  private String getUserAgentFromConfig() throws ConfigurationLoadException, ValidationException {
+    InputStream inputStream = null;
+
+    try {
+      inputStream = new BufferedInputStream(new FileInputStream(configPath));
+
+      Properties properties = new Properties();
+      properties.load(inputStream);
+      String userAgent = properties.getProperty(PROPERTY_USER_AGENT, "");
+      
+      // Check that user agent is not empty or the default.
+      if (Strings.isNullOrEmpty(userAgent)
+          || userAgent.contains(DEFAULT_USER_AGENT)) {
+        throw new ValidationException(String.format(
+            "User agent must be set and not be the default [%s]", DEFAULT_USER_AGENT),
+            "userAgent");
+      }      
+      return userAgent;
+    } catch (IOException e) {
+      throw new ConfigurationLoadException("Problem reading configuration from " + configPath, e);
+    } finally {
+      if (inputStream != null) {
+        try {
+          inputStream.close();
+        } catch (IOException e) {
+          logger.warn("Error closing input stream", e);
+        }
+      }
+    }
+  }
 
   /**
    * Initializes this utility (credentials, sessions, ...).
@@ -145,10 +196,12 @@ public class AdWordsApiUtil {
               .fromFile(configPath)
               .build()
               .generateCredential();
-
+      
       // Construct an AdWordsSession.
+      String userAgentFromConfig = getUserAgentFromConfig();
       session = new AdWordsSession.Builder()
           .fromFile(configPath)
+          .withUserAgent(PREFIX_USER_AGENT + userAgentFromConfig)
           .withOAuth2Credential(oAuth2Credential)
           .build();
 
