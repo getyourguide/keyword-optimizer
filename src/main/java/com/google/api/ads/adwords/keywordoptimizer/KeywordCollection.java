@@ -130,7 +130,7 @@ public class KeywordCollection implements Iterable<KeywordInfo> {
    * Returns a list of all contained {@link KeywordInfo}s sorted by score (best first).
    */
   public List<KeywordInfo> getListSortedByScore() {
-    return Ordering.from(new ScoreComparator()).sortedCopy(keywords.values());
+    return Ordering.from(new ScoreComparator()).reverse().sortedCopy(keywords.values());
   }
   
   /**

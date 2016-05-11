@@ -105,7 +105,7 @@ public class KeywordCollectionScoreTest {
   public void checkScoreComparator() {
     List<KeywordInfo> sortedKeywords = keywords.getListSortedByScore();
     
-    assertEquals(ImmutableList.of(betaInfo, betaBroadInfo, alphaInfo, gammaInfo), sortedKeywords);
+    assertEquals(ImmutableList.of(gammaInfo, alphaInfo, betaBroadInfo, betaInfo), sortedKeywords);
   }
   
   /**
@@ -122,13 +122,13 @@ public class KeywordCollectionScoreTest {
     // Check returning the best two keywords works correctly.
     assertTrue(
         Iterables.elementsEqual(
-            keywords.getBest(2).getListSortedByScore(), ImmutableList.of(alphaInfo, gammaInfo)));
+            keywords.getBest(2).getListSortedByScore(), ImmutableList.of(gammaInfo, alphaInfo)));
 
     // Check returning the best three keywords works correctly.
     assertTrue(
         Iterables.elementsEqual(
             keywords.getBest(3).getListSortedByScore(),
-            ImmutableList.of(betaBroadInfo, alphaInfo, gammaInfo)));
+            ImmutableList.of(gammaInfo, alphaInfo, betaBroadInfo)));
 
     // Check returning all keywords leads to the same elements.
     assertTrue(Iterables.elementsEqual(keywords.getBest(4), keywords));
