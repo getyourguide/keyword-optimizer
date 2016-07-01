@@ -144,13 +144,14 @@ public class TesEstimator implements TrafficEstimator {
       }
 
       final TrafficEstimatorSelector selector = createSelector(keywords);
-      TrafficEstimatorResult result = AwapiRateLimiter.getInstance()
-          .run(new AwapiCall<TrafficEstimatorResult>() {
-            @Override
-            public TrafficEstimatorResult invoke() throws ApiException, RemoteException {
-              return tes.get(selector);
-            }
-          }, clientCustomerId);
+      final AwapiRateLimiter rateLimiter =
+          AwapiRateLimiter.getInstance(AwapiRateLimiter.RateLimitBucket.OTHERS);
+      TrafficEstimatorResult result = rateLimiter.run(new AwapiCall<TrafficEstimatorResult>() {
+        @Override
+        public TrafficEstimatorResult invoke() throws ApiException, RemoteException {
+          return tes.get(selector);
+        }
+      }, clientCustomerId);
       KeywordCollection estimates = createEstimates(result, keywords);
 
       return estimates;

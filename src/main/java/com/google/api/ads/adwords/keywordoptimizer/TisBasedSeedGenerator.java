@@ -35,12 +35,12 @@ import java.util.Set;
 
 /**
  * Base class for {@link SeedGenerator}s using the {@link TargetingIdeaService} for creating seed
- * keywords. Delegates the creation of the {@link TargetingIdeaSelector} to derived classes and 
- * implements the extraction of plain text keywords from the results of the 
+ * keywords. Delegates the creation of the {@link TargetingIdeaSelector} to derived classes and
+ * implements the extraction of plain text keywords from the results of the
  * {@link TargetingIdeaService}.
  */
 public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
-  // Page size for retrieving results. All pages are used anyways (not just the first one), so 
+  // Page size for retrieving results. All pages are used anyways (not just the first one), so
   // using a reasonable value here.
   public static final int PAGE_SIZE = 100;
 
@@ -79,11 +79,12 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
       int offset = 0;
 
       TargetingIdeaPage page = null;
+      final AwapiRateLimiter rateLimiter =
+          AwapiRateLimiter.getInstance(AwapiRateLimiter.RateLimitBucket.OTHERS);
 
       do {
         selector.setPaging(new Paging(offset, PAGE_SIZE));
-
-        page = AwapiRateLimiter.getInstance().run(new AwapiCall<TargetingIdeaPage>() {
+        page = rateLimiter.run(new AwapiCall<TargetingIdeaPage>() {
           @Override
           public TargetingIdeaPage invoke() throws ApiException, RemoteException {
             return tis.get(selector);

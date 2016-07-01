@@ -120,11 +120,12 @@ public class TisAlternativesFinder implements AlternativesFinder {
 
     try {
       TargetingIdeaPage page = null;
+      final AwapiRateLimiter rateLimiter =
+          AwapiRateLimiter.getInstance(AwapiRateLimiter.RateLimitBucket.OTHERS);
 
       do {
         selector.setPaging(new Paging(offset, TisBasedSeedGenerator.PAGE_SIZE));
-
-        page = AwapiRateLimiter.getInstance().run(new AwapiCall<TargetingIdeaPage>() {
+        page = rateLimiter.run(new AwapiCall<TargetingIdeaPage>() {
           @Override
           public TargetingIdeaPage invoke() throws ApiException, RemoteException {
             return tis.get(selector);
