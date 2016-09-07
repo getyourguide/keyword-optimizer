@@ -14,10 +14,9 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
-import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201607.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
 import com.google.common.collect.Sets;
-
 import java.util.Collection;
 import java.util.Set;
 

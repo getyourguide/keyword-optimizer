@@ -14,17 +14,16 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201603.cm.Criterion;
-import com.google.api.ads.adwords.axis.v201603.o.AdGroupEstimateRequest;
-import com.google.api.ads.adwords.axis.v201603.o.CampaignEstimateRequest;
-import com.google.api.ads.adwords.axis.v201603.o.KeywordEstimate;
-import com.google.api.ads.adwords.axis.v201603.o.KeywordEstimateRequest;
-import com.google.api.ads.adwords.axis.v201603.o.TrafficEstimatorResult;
-import com.google.api.ads.adwords.axis.v201603.o.TrafficEstimatorSelector;
-import com.google.api.ads.adwords.axis.v201603.o.TrafficEstimatorService;
-import com.google.api.ads.adwords.axis.v201603.o.TrafficEstimatorServiceInterface;
-
+import com.google.api.ads.adwords.axis.v201607.cm.ApiException;
+import com.google.api.ads.adwords.axis.v201607.cm.Criterion;
+import com.google.api.ads.adwords.axis.v201607.o.AdGroupEstimateRequest;
+import com.google.api.ads.adwords.axis.v201607.o.CampaignEstimateRequest;
+import com.google.api.ads.adwords.axis.v201607.o.KeywordEstimate;
+import com.google.api.ads.adwords.axis.v201607.o.KeywordEstimateRequest;
+import com.google.api.ads.adwords.axis.v201607.o.TrafficEstimatorResult;
+import com.google.api.ads.adwords.axis.v201607.o.TrafficEstimatorSelector;
+import com.google.api.ads.adwords.axis.v201607.o.TrafficEstimatorService;
+import com.google.api.ads.adwords.axis.v201607.o.TrafficEstimatorServiceInterface;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +93,7 @@ public class TesEstimator implements TrafficEstimator {
 
     TrafficEstimatorSelector selector =
         new TrafficEstimatorSelector(
-            campaignEstimateRequests.toArray(new CampaignEstimateRequest[] {}));
+            campaignEstimateRequests.toArray(new CampaignEstimateRequest[] {}), false);
     return selector;
   }
 

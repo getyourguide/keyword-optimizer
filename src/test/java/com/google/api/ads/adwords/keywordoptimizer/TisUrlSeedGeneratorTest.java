@@ -16,26 +16,24 @@ package com.google.api.ads.adwords.keywordoptimizer;
 
 import static org.junit.Assert.assertEquals;
 
-import com.google.api.ads.adwords.axis.v201603.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201603.o.Attribute;
-import com.google.api.ads.adwords.axis.v201603.o.AttributeType;
-import com.google.api.ads.adwords.axis.v201603.o.StringAttribute;
-import com.google.api.ads.adwords.axis.v201603.o.TargetingIdea;
-import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaPage;
-import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaSelector;
-import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaServiceInterface;
-import com.google.api.ads.adwords.axis.v201603.o.Type_AttributeMapEntry;
+import com.google.api.ads.adwords.axis.v201607.cm.ApiException;
+import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201607.o.Attribute;
+import com.google.api.ads.adwords.axis.v201607.o.AttributeType;
+import com.google.api.ads.adwords.axis.v201607.o.StringAttribute;
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdea;
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaPage;
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaSelector;
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaServiceInterface;
+import com.google.api.ads.adwords.axis.v201607.o.Type_AttributeMapEntry;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-
+import java.rmi.RemoteException;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
-import java.rmi.RemoteException;
-import java.util.Set;
 
 /**
  * Test case for the {@link TisUrlSeedGenerator} class.

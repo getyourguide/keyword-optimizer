@@ -17,18 +17,16 @@ package com.google.api.ads.adwords.keywordoptimizer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
-import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201603.cm.Language;
-import com.google.api.ads.adwords.axis.v201603.cm.Location;
-import com.google.api.ads.adwords.axis.v201603.cm.Money;
-
+import com.google.api.ads.adwords.axis.v201607.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201607.cm.Language;
+import com.google.api.ads.adwords.axis.v201607.cm.Location;
+import com.google.api.ads.adwords.axis.v201607.cm.Money;
+import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
-import java.util.Collection;
 
 /**
  * Test cases for the {@link KeywordCollection} class regarding keyword handling (keyword texts,

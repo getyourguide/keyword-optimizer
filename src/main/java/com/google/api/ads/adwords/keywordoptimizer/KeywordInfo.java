@@ -14,11 +14,9 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
-
-import org.apache.commons.lang.SystemUtils;
-
+import com.google.api.ads.adwords.axis.v201607.cm.Keyword;
 import javax.annotation.Nullable;
+import org.apache.commons.lang.SystemUtils;
 
 /**
  * Represents quality information about a keyword, namely the {@link Keyword} itself, a

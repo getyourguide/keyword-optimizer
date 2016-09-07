@@ -17,22 +17,19 @@ package com.google.api.ads.adwords.keywordoptimizer;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-import com.google.api.ads.adwords.axis.v201603.cm.ApiError;
-import com.google.api.ads.adwords.axis.v201603.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201603.cm.RateExceededError;
+import com.google.api.ads.adwords.axis.v201607.cm.ApiError;
+import com.google.api.ads.adwords.axis.v201607.cm.ApiException;
+import com.google.api.ads.adwords.axis.v201607.cm.RateExceededError;
 import com.google.common.util.concurrent.AtomicLongMap;
 import com.google.common.util.concurrent.Uninterruptibles;
-
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.rmi.RemoteException;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-
 import javax.annotation.Nullable;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A rate limiter implementation that handles RateExceededError for AdWords API applications. It has

@@ -17,18 +17,16 @@ package com.google.api.ads.adwords.keywordoptimizer;
 import static org.hamcrest.core.Is.isA;
 import static org.junit.Assert.assertTrue;
 
-import com.google.api.ads.adwords.axis.v201603.cm.ApiError;
-import com.google.api.ads.adwords.axis.v201603.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201603.cm.RateExceededError;
-import com.google.api.ads.adwords.axis.v201603.cm.RateExceededErrorReason;
-
+import com.google.api.ads.adwords.axis.v201607.cm.ApiError;
+import com.google.api.ads.adwords.axis.v201607.cm.ApiException;
+import com.google.api.ads.adwords.axis.v201607.cm.RateExceededError;
+import com.google.api.ads.adwords.axis.v201607.cm.RateExceededErrorReason;
+import java.rmi.RemoteException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
-import java.rmi.RemoteException;
 
 /**
  * Test case for the {@link AwapiRateLimiter} class.

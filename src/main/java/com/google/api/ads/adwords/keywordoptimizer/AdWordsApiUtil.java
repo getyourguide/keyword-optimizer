@@ -30,12 +30,9 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -43,8 +40,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
-
 import javax.annotation.concurrent.NotThreadSafe;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a basic utility class for helping with AdWords API communication. It handles the
@@ -119,7 +117,8 @@ public class AdWordsApiUtil {
 
     // Wait for the authorization code.
     System.out.println("Type the code you received here: ");
-    String authorizationCode = new BufferedReader(new InputStreamReader(System.in)).readLine();
+    String authorizationCode =
+        new BufferedReader(new InputStreamReader(System.in, Charsets.UTF_8)).readLine();
 
     // Authorize the OAuth2 token.
     GoogleAuthorizationCodeTokenRequest tokenRequest =

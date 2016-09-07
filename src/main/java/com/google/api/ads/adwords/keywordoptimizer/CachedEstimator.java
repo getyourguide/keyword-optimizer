@@ -14,13 +14,11 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.google.api.ads.adwords.axis.v201607.cm.Keyword;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This {@link TrafficEstimator} uses an internal cache for storing {@link TrafficEstimate}s that

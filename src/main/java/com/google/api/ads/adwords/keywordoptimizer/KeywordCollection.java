@@ -14,13 +14,10 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
-import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201607.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Ordering;
-
-import org.apache.commons.lang.SystemUtils;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang.SystemUtils;
 
 /**
  * Represents a set of keywords with information about their quality ({@link KeywordInfo}) as well
