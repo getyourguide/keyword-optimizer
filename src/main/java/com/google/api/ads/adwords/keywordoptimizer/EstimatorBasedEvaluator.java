@@ -41,10 +41,14 @@ public class EstimatorBasedEvaluator implements Evaluator {
     KeywordCollection estimates = estimator.estimate(keywords);
 
     for (KeywordInfo estimate : estimates) {
-      double score = scoreCalculator.calculate(estimate.getEstimate());
+      double score = scoreCalculator.calculate(estimate.getTrafficEstimate());
 
       KeywordInfo evaluation =
-          new KeywordInfo(estimate.getKeyword(), estimate.getEstimate(), score);
+          new KeywordInfo(
+              estimate.getKeyword(),
+              estimate.getIdeaEstimate(),
+              estimate.getTrafficEstimate(),
+              score);
       evaluations.add(evaluation);
     }
 

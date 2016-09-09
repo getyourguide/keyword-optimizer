@@ -14,17 +14,16 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201603.cm.Criterion;
-import com.google.api.ads.adwords.axis.v201603.o.AdGroupEstimateRequest;
-import com.google.api.ads.adwords.axis.v201603.o.CampaignEstimateRequest;
-import com.google.api.ads.adwords.axis.v201603.o.KeywordEstimate;
-import com.google.api.ads.adwords.axis.v201603.o.KeywordEstimateRequest;
-import com.google.api.ads.adwords.axis.v201603.o.TrafficEstimatorResult;
-import com.google.api.ads.adwords.axis.v201603.o.TrafficEstimatorSelector;
-import com.google.api.ads.adwords.axis.v201603.o.TrafficEstimatorService;
-import com.google.api.ads.adwords.axis.v201603.o.TrafficEstimatorServiceInterface;
-
+import com.google.api.ads.adwords.axis.v201607.cm.ApiException;
+import com.google.api.ads.adwords.axis.v201607.cm.Criterion;
+import com.google.api.ads.adwords.axis.v201607.o.AdGroupEstimateRequest;
+import com.google.api.ads.adwords.axis.v201607.o.CampaignEstimateRequest;
+import com.google.api.ads.adwords.axis.v201607.o.KeywordEstimate;
+import com.google.api.ads.adwords.axis.v201607.o.KeywordEstimateRequest;
+import com.google.api.ads.adwords.axis.v201607.o.TrafficEstimatorResult;
+import com.google.api.ads.adwords.axis.v201607.o.TrafficEstimatorSelector;
+import com.google.api.ads.adwords.axis.v201607.o.TrafficEstimatorService;
+import com.google.api.ads.adwords.axis.v201607.o.TrafficEstimatorServiceInterface;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +93,7 @@ public class TesEstimator implements TrafficEstimator {
 
     TrafficEstimatorSelector selector =
         new TrafficEstimatorSelector(
-            campaignEstimateRequests.toArray(new CampaignEstimateRequest[] {}));
+            campaignEstimateRequests.toArray(new CampaignEstimateRequest[] {}), false);
     return selector;
   }
 
@@ -127,7 +126,10 @@ public class TesEstimator implements TrafficEstimator {
       KeywordInfo originalKeyword = sortedKeywords.get(i);
       KeywordInfo estimate =
           new KeywordInfo(
-              originalKeyword.getKeyword(), new TrafficEstimate(keywordEstimates[i]), null);
+              originalKeyword.getKeyword(),
+              originalKeyword.getIdeaEstimate(),
+              new TrafficEstimate(keywordEstimates[i]),
+              null);
       estimates.add(estimate);
     }
     return estimates;
@@ -144,13 +146,14 @@ public class TesEstimator implements TrafficEstimator {
       }
 
       final TrafficEstimatorSelector selector = createSelector(keywords);
-      TrafficEstimatorResult result = AwapiRateLimiter.getInstance()
-          .run(new AwapiCall<TrafficEstimatorResult>() {
-            @Override
-            public TrafficEstimatorResult invoke() throws ApiException, RemoteException {
-              return tes.get(selector);
-            }
-          }, clientCustomerId);
+      final AwapiRateLimiter rateLimiter =
+          AwapiRateLimiter.getInstance(AwapiRateLimiter.RateLimitBucket.OTHERS);
+      TrafficEstimatorResult result = rateLimiter.run(new AwapiCall<TrafficEstimatorResult>() {
+        @Override
+        public TrafficEstimatorResult invoke() throws ApiException, RemoteException {
+          return tes.get(selector);
+        }
+      }, clientCustomerId);
       KeywordCollection estimates = createEstimates(result, keywords);
 
       return estimates;

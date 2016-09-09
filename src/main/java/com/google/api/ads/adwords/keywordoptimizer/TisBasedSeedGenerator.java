@@ -14,36 +14,35 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201603.cm.Paging;
-import com.google.api.ads.adwords.axis.v201603.o.Attribute;
-import com.google.api.ads.adwords.axis.v201603.o.AttributeType;
-import com.google.api.ads.adwords.axis.v201603.o.StringAttribute;
-import com.google.api.ads.adwords.axis.v201603.o.TargetingIdea;
-import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaPage;
-import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaSelector;
-import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaService;
-import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaServiceInterface;
+import com.google.api.ads.adwords.axis.v201607.cm.ApiException;
+import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201607.cm.Paging;
+import com.google.api.ads.adwords.axis.v201607.o.Attribute;
+import com.google.api.ads.adwords.axis.v201607.o.AttributeType;
+import com.google.api.ads.adwords.axis.v201607.o.StringAttribute;
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdea;
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaPage;
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaSelector;
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaService;
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaServiceInterface;
 import com.google.api.ads.common.lib.utils.Maps;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * Base class for {@link SeedGenerator}s using the {@link TargetingIdeaService} for creating seed
- * keywords. Delegates the creation of the {@link TargetingIdeaSelector} to derived classes and 
- * implements the extraction of plain text keywords from the results of the 
+ * keywords. Delegates the creation of the {@link TargetingIdeaSelector} to derived classes and
+ * implements the extraction of plain text keywords from the results of the
  * {@link TargetingIdeaService}.
  */
 public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
-  // Page size for retrieving results. All pages are used anyways (not just the first one), so 
+  // Page size for retrieving results. All pages are used anyways (not just the first one), so
   // using a reasonable value here.
   public static final int PAGE_SIZE = 100;
-
+  
   protected TargetingIdeaServiceInterface tis;
   private final Long clientCustomerId;
 
@@ -69,21 +68,23 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
    * @return returns a selector for the {@link TargetingIdeaService}
    */
   protected abstract TargetingIdeaSelector getSelector();
-
+  
   @Override
-  protected Collection<String> getKeywords() throws KeywordOptimizerException {
+  protected ImmutableMap<String, IdeaEstimate> getKeywordsAndEstimates()
+      throws KeywordOptimizerException {
     final TargetingIdeaSelector selector = getSelector();
-    Collection<String> keywords = new ArrayList<String>();
-
+    Builder<String, IdeaEstimate> keywordsAndEstimatesBuilder = ImmutableMap.builder();
+    
     try {
       int offset = 0;
 
       TargetingIdeaPage page = null;
+      final AwapiRateLimiter rateLimiter =
+          AwapiRateLimiter.getInstance(AwapiRateLimiter.RateLimitBucket.OTHERS);
 
       do {
         selector.setPaging(new Paging(offset, PAGE_SIZE));
-
-        page = AwapiRateLimiter.getInstance().run(new AwapiCall<TargetingIdeaPage>() {
+        page = rateLimiter.run(new AwapiCall<TargetingIdeaPage>() {
           @Override
           public TargetingIdeaPage invoke() throws ApiException, RemoteException {
             return tis.get(selector);
@@ -92,10 +93,13 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
 
         if (page.getEntries() != null) {
           for (TargetingIdea targetingIdea : page.getEntries()) {
-            Map<AttributeType, Attribute> data = Maps.toMap(targetingIdea.getData());
-
-            StringAttribute keyword = (StringAttribute) data.get(AttributeType.KEYWORD_TEXT);
-            keywords.add(keyword.getValue());
+            Map<AttributeType, Attribute> attributeData = Maps.toMap(targetingIdea.getData());
+            
+            StringAttribute keywordAttribute =
+                (StringAttribute) attributeData.get(AttributeType.KEYWORD_TEXT);
+            IdeaEstimate estimate = KeywordOptimizerUtil.toSearchEstimate(attributeData);
+            
+            keywordsAndEstimatesBuilder.put(keywordAttribute.getValue(), estimate);
           }
         }
         offset += PAGE_SIZE;
@@ -107,6 +111,7 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
       throw new KeywordOptimizerException("Problem while connecting to the AdWords API", e);
     }
 
-    return keywords;
+    return keywordsAndEstimatesBuilder.build();
   }
+  
 }

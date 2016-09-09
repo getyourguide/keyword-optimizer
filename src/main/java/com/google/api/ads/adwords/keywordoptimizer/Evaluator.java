@@ -14,7 +14,7 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201607.cm.Keyword;
 
 /**
  * Evaluates a list of given {@link KeywordCollection} by calculating a score for it. The way the

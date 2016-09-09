@@ -14,11 +14,10 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
+import javax.annotation.Nullable;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nullable;
 
 /**
  * Default implementation of the {@link RoundStrategy}, which defines how to change the current set

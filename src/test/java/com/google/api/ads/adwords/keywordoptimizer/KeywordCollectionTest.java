@@ -17,18 +17,16 @@ package com.google.api.ads.adwords.keywordoptimizer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
-import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201603.cm.Language;
-import com.google.api.ads.adwords.axis.v201603.cm.Location;
-import com.google.api.ads.adwords.axis.v201603.cm.Money;
-
+import com.google.api.ads.adwords.axis.v201607.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201607.cm.Language;
+import com.google.api.ads.adwords.axis.v201607.cm.Location;
+import com.google.api.ads.adwords.axis.v201607.cm.Money;
+import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
-import java.util.Collection;
 
 /**
  * Test cases for the {@link KeywordCollection} class regarding keyword handling (keyword texts,
@@ -79,9 +77,9 @@ public class KeywordCollectionTest {
     keywords = new KeywordCollection(campaignSettings);
     
     keywords = new KeywordCollection(campaignSettings);
-    keywords.add(new KeywordInfo(plumbing, null, null));
-    keywords.add(new KeywordInfo(plumbingBroad, null, null));
-    keywords.add(new KeywordInfo(plumbingSpecialist, null, null));
+    keywords.add(new KeywordInfo(plumbing, null, null, null));
+    keywords.add(new KeywordInfo(plumbingBroad, null, null, null));
+    keywords.add(new KeywordInfo(plumbingSpecialist, null, null, null));
   }
 
   /**
@@ -128,14 +126,14 @@ public class KeywordCollectionTest {
     assertEquals(3, keywords.size());
 
     // Add the same keyword as is.
-    keywords.add(new KeywordInfo(plumbing, null, null));
+    keywords.add(new KeywordInfo(plumbing, null, null, null));
     assertEquals(3, keywords.size());
 
     // Add the same keyword (different object).
     Keyword plumbing2 = new Keyword();
     plumbing2.setText("plumbing");
     plumbing2.setMatchType(KeywordMatchType.EXACT);
-    keywords.add(new KeywordInfo(plumbing2, null, null));
+    keywords.add(new KeywordInfo(plumbing2, null, null, null));
 
     assertEquals(3, keywords.size());
   }

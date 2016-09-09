@@ -14,11 +14,12 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
-import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
-import com.google.common.collect.Sets;
-
-import java.util.Collection;
+import com.google.api.ads.adwords.axis.v201607.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -27,7 +28,7 @@ import java.util.Set;
  */
 public abstract class AbstractSeedGenerator implements SeedGenerator {
   private final CampaignConfiguration campaignConfiguration;
-  private final Set<KeywordMatchType> matchTypes;
+  private final ImmutableSet<KeywordMatchType> matchTypes;
   
   /**
    * Creates a new {@link AbstractSeedGenerator} using the given settings.
@@ -38,30 +39,33 @@ public abstract class AbstractSeedGenerator implements SeedGenerator {
    */
   public AbstractSeedGenerator(
       Set<KeywordMatchType> matchTypes, CampaignConfiguration campaignConfiguration) {
-    this.matchTypes = Sets.newHashSet(matchTypes);
+    this.matchTypes = ImmutableSet.copyOf(matchTypes);
     this.campaignConfiguration = campaignConfiguration;
   }
 
   /**
-   * Method for generating plain text keywords. This has to be implemented by derived classes. The
-   * {@link AbstractSeedGenerator} will use these plain texts to create actual {@link
-   * KeywordCollection} using the specified additional criteria and match types.
+   * Method for generating plain text keywords and related statistics about Google Search. This has
+   * to be implemented by derived classes. The {@link AbstractSeedGenerator} will use these plain
+   * texts to create actual {@link KeywordCollection} using the specified additional criteria and
+   * match types. If an implementing class does not provide {@link IdeaEstimate}s, it should set
+   * {@link IdeaEstimate#EMPTY_ESTIMATE} for each keyword.
    *
-   * @return a {@link Collection} a plain text keywords
+   * @return a {@link Map} of plain text keywords and their {@link IdeaEstimate}s
    * @throws KeywordOptimizerException in case of an error retrieving seed keywords
    */
-  protected abstract Collection<String> getKeywords() throws KeywordOptimizerException;
+  protected abstract ImmutableMap<String, IdeaEstimate> getKeywordsAndEstimates()
+      throws KeywordOptimizerException;
 
   @Override
   public final KeywordCollection generate() throws KeywordOptimizerException {
-    Collection<String> keywords = getKeywords();
+    ImmutableMap<String, IdeaEstimate> keywordsAndEstimates = getKeywordsAndEstimates();
 
     KeywordCollection keywordCollection = new KeywordCollection(campaignConfiguration);
 
-    for (String keywordText : keywords) {
+    for (Entry<String, IdeaEstimate> keywordEntry : keywordsAndEstimates.entrySet()) {
       for (KeywordMatchType matchType : matchTypes) {
-        Keyword keyword = KeywordOptimizerUtil.createKeyword(keywordText, matchType);
-        keywordCollection.add(new KeywordInfo(keyword, null, null));
+        Keyword keyword = KeywordOptimizerUtil.createKeyword(keywordEntry.getKey(), matchType);
+        keywordCollection.add(new KeywordInfo(keyword, keywordEntry.getValue(), null, null));
       }
     }
 

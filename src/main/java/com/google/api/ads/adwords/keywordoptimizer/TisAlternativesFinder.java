@@ -14,27 +14,27 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201603.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
-import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201603.cm.Paging;
-import com.google.api.ads.adwords.axis.v201603.o.Attribute;
-import com.google.api.ads.adwords.axis.v201603.o.AttributeType;
-import com.google.api.ads.adwords.axis.v201603.o.IdeaType;
-import com.google.api.ads.adwords.axis.v201603.o.RelatedToQuerySearchParameter;
-import com.google.api.ads.adwords.axis.v201603.o.RequestType;
-import com.google.api.ads.adwords.axis.v201603.o.SearchParameter;
-import com.google.api.ads.adwords.axis.v201603.o.StringAttribute;
-import com.google.api.ads.adwords.axis.v201603.o.TargetingIdea;
-import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaPage;
-import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaSelector;
-import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaService;
-import com.google.api.ads.adwords.axis.v201603.o.TargetingIdeaServiceInterface;
+import com.google.api.ads.adwords.axis.v201607.cm.ApiException;
+import com.google.api.ads.adwords.axis.v201607.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201607.cm.Paging;
+import com.google.api.ads.adwords.axis.v201607.o.Attribute;
+import com.google.api.ads.adwords.axis.v201607.o.AttributeType;
+import com.google.api.ads.adwords.axis.v201607.o.IdeaType;
+import com.google.api.ads.adwords.axis.v201607.o.RelatedToQuerySearchParameter;
+import com.google.api.ads.adwords.axis.v201607.o.RequestType;
+import com.google.api.ads.adwords.axis.v201607.o.SearchParameter;
+import com.google.api.ads.adwords.axis.v201607.o.StringAttribute;
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdea;
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaPage;
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaSelector;
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaService;
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaServiceInterface;
 import com.google.api.ads.common.lib.utils.Maps;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +44,10 @@ import java.util.Map;
  * given set of already existing ones.
  */
 public class TisAlternativesFinder implements AlternativesFinder {
+  // Page size for retrieving results. All pages are used anyways (not just the first one), so
+  // using a reasonable value here.
+  public static final int PAGE_SIZE = 100;
+  
   private TargetingIdeaServiceInterface tis;
   private final Long clientCustomerId;
 
@@ -59,13 +63,14 @@ public class TisAlternativesFinder implements AlternativesFinder {
 
   @Override
   public KeywordCollection derive(KeywordCollection keywords) throws KeywordOptimizerException {
-    Collection<String> keywordTexts = getKeywordTexts(keywords);
+    Map<String, IdeaEstimate> keywordsAndEstimates = getKeywordsAndEstimates(keywords);
 
     KeywordCollection alternatives = new KeywordCollection(keywords.getCampaignConfiguration());
-    for (String keywordText : keywordTexts) {
+    for (String keywordText : keywordsAndEstimates.keySet()) {
       for (KeywordMatchType matchType : keywords.getContainingMatchTypes()) {
         Keyword newKeyword = KeywordOptimizerUtil.createKeyword(keywordText, matchType);
-        alternatives.add(new KeywordInfo(newKeyword, null, null));
+        alternatives.add(
+            new KeywordInfo(newKeyword, keywordsAndEstimates.get(keywordText), null, null));
       }
     }
 
@@ -83,8 +88,7 @@ public class TisAlternativesFinder implements AlternativesFinder {
     TargetingIdeaSelector selector = new TargetingIdeaSelector();
     selector.setRequestType(RequestType.IDEAS);
     selector.setIdeaType(IdeaType.KEYWORD);
-
-    selector.setRequestedAttributeTypes(new AttributeType[] {AttributeType.KEYWORD_TEXT});
+    selector.setRequestedAttributeTypes(KeywordOptimizerUtil.TIS_ATTRIBUTE_TYPES);
 
     List<SearchParameter> searchParameters = new ArrayList<SearchParameter>();
 
@@ -96,8 +100,9 @@ public class TisAlternativesFinder implements AlternativesFinder {
     searchParameters.add(relatedToQuerySearchParameter);
 
     // Now add all other criteria.
-    searchParameters.addAll(KeywordOptimizerUtil.toSearchParameters(keywords.getCampaignConfiguration()
-        .getAdditionalCriteria()));
+    searchParameters.addAll(
+        KeywordOptimizerUtil.toSearchParameters(
+            keywords.getCampaignConfiguration().getAdditionalCriteria()));
 
     selector.setSearchParameters(searchParameters.toArray(new SearchParameter[] {}));
 
@@ -106,25 +111,26 @@ public class TisAlternativesFinder implements AlternativesFinder {
 
   /**
    * Finds a collection of plain text keywords based on the given set of keywords.
-   * 
+   *
    * @param keywords the keywords to as a basis for finding new ones
-   * @return a collection of plain text keywords
+   * @return a {@link Map} of plain text keywords and their {@link IdeaEstimate}s
    * @throws KeywordOptimizerException in case of an error retrieving keywords from TIS
    */
-  protected Collection<String> getKeywordTexts(KeywordCollection keywords)
+  protected ImmutableMap<String, IdeaEstimate> getKeywordsAndEstimates(KeywordCollection keywords)
       throws KeywordOptimizerException {
     final TargetingIdeaSelector selector = getSelector(keywords);
-    Collection<String> keywordTexts = new ArrayList<String>();
+    Builder<String, IdeaEstimate> keywordsAndEstimatesBuilder = ImmutableMap.builder();
 
     int offset = 0;
 
     try {
       TargetingIdeaPage page = null;
+      final AwapiRateLimiter rateLimiter =
+          AwapiRateLimiter.getInstance(AwapiRateLimiter.RateLimitBucket.OTHERS);
 
       do {
-        selector.setPaging(new Paging(offset, TisBasedSeedGenerator.PAGE_SIZE));
-
-        page = AwapiRateLimiter.getInstance().run(new AwapiCall<TargetingIdeaPage>() {
+        selector.setPaging(new Paging(offset, PAGE_SIZE));
+        page = rateLimiter.run(new AwapiCall<TargetingIdeaPage>() {
           @Override
           public TargetingIdeaPage invoke() throws ApiException, RemoteException {
             return tis.get(selector);
@@ -133,13 +139,16 @@ public class TisAlternativesFinder implements AlternativesFinder {
 
         if (page.getEntries() != null) {
           for (TargetingIdea targetingIdea : page.getEntries()) {
-            Map<AttributeType, Attribute> data = Maps.toMap(targetingIdea.getData());
+            Map<AttributeType, Attribute> attributeData = Maps.toMap(targetingIdea.getData());
 
-            StringAttribute keyword = (StringAttribute) data.get(AttributeType.KEYWORD_TEXT);
-            keywordTexts.add(keyword.getValue());
+            StringAttribute keywordAttribute =
+                (StringAttribute) attributeData.get(AttributeType.KEYWORD_TEXT);
+            IdeaEstimate estimate = KeywordOptimizerUtil.toSearchEstimate(attributeData);
+            
+            keywordsAndEstimatesBuilder.put(keywordAttribute.getValue(), estimate);
           }
         }
-        offset += TisBasedSeedGenerator.PAGE_SIZE;
+        offset += PAGE_SIZE;
       } while (offset < page.getTotalNumEntries());
 
     } catch (ApiException e) {
@@ -148,6 +157,6 @@ public class TisAlternativesFinder implements AlternativesFinder {
       throw new KeywordOptimizerException("Problem while connecting to the AdWords API", e);
     }
 
-    return keywordTexts;
+    return keywordsAndEstimatesBuilder.build();
   }
 }

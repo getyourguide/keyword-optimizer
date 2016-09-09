@@ -17,11 +17,10 @@ package com.google.api.ads.adwords.keywordoptimizer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.google.api.ads.adwords.axis.v201603.cm.Keyword;
-import com.google.api.ads.adwords.axis.v201603.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201603.cm.Money;
-import com.google.api.ads.adwords.axis.v201603.o.StatsEstimate;
-
+import com.google.api.ads.adwords.axis.v201607.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201607.cm.Money;
+import com.google.api.ads.adwords.axis.v201607.o.StatsEstimate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,9 +68,9 @@ public class EvaluatorTest {
         .withMaxCpc(maxCpc)
         .build();
     keywords = new KeywordCollection(campaignSettings);
-    keywords.add(new KeywordInfo(plumbing, null, null));
-    keywords.add(new KeywordInfo(plumbingBroad, null, null));
-    keywords.add(new KeywordInfo(plumbingSpecialist, null, null));
+    keywords.add(new KeywordInfo(plumbing, IdeaEstimate.EMPTY_ESTIMATE, null, null));
+    keywords.add(new KeywordInfo(plumbingBroad, IdeaEstimate.EMPTY_ESTIMATE, null, null));
+    keywords.add(new KeywordInfo(plumbingSpecialist, IdeaEstimate.EMPTY_ESTIMATE, null, null));
 
     minStats = new StatsEstimate();
     minStats.setClicksPerDay(10F);
@@ -167,7 +166,8 @@ public class EvaluatorTest {
 
       for (KeywordInfo keyword : keywords) {
         TrafficEstimate te = new TrafficEstimate(minStats, maxStats);
-        estimates.add(new KeywordInfo(keyword.getKeyword(), te, null));
+        estimates.add(
+            new KeywordInfo(keyword.getKeyword(), IdeaEstimate.EMPTY_ESTIMATE, te, null));
       }
 
       return estimates;
