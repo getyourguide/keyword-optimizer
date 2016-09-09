@@ -77,9 +77,9 @@ public class KeywordCollectionTest {
     keywords = new KeywordCollection(campaignSettings);
     
     keywords = new KeywordCollection(campaignSettings);
-    keywords.add(new KeywordInfo(plumbing, null, null));
-    keywords.add(new KeywordInfo(plumbingBroad, null, null));
-    keywords.add(new KeywordInfo(plumbingSpecialist, null, null));
+    keywords.add(new KeywordInfo(plumbing, null, null, null));
+    keywords.add(new KeywordInfo(plumbingBroad, null, null, null));
+    keywords.add(new KeywordInfo(plumbingSpecialist, null, null, null));
   }
 
   /**
@@ -126,14 +126,14 @@ public class KeywordCollectionTest {
     assertEquals(3, keywords.size());
 
     // Add the same keyword as is.
-    keywords.add(new KeywordInfo(plumbing, null, null));
+    keywords.add(new KeywordInfo(plumbing, null, null, null));
     assertEquals(3, keywords.size());
 
     // Add the same keyword (different object).
     Keyword plumbing2 = new Keyword();
     plumbing2.setText("plumbing");
     plumbing2.setMatchType(KeywordMatchType.EXACT);
-    keywords.add(new KeywordInfo(plumbing2, null, null));
+    keywords.add(new KeywordInfo(plumbing2, null, null, null));
 
     assertEquals(3, keywords.size());
   }

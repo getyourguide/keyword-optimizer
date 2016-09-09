@@ -16,7 +16,6 @@ package com.google.api.ads.adwords.keywordoptimizer;
 
 import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
 import com.google.api.ads.adwords.axis.v201607.cm.Paging;
-import com.google.api.ads.adwords.axis.v201607.o.AttributeType;
 import com.google.api.ads.adwords.axis.v201607.o.CategoryProductsAndServicesSearchParameter;
 import com.google.api.ads.adwords.axis.v201607.o.IdeaType;
 import com.google.api.ads.adwords.axis.v201607.o.RequestType;
@@ -62,8 +61,7 @@ public class TisCategorySeedGenerator extends TisBasedSeedGenerator {
     selector.setRequestType(RequestType.IDEAS);
     selector.setIdeaType(IdeaType.KEYWORD);
     selector.setPaging(new Paging(0, PAGE_SIZE));
-
-    selector.setRequestedAttributeTypes(new AttributeType[] {AttributeType.KEYWORD_TEXT});
+    selector.setRequestedAttributeTypes(KeywordOptimizerUtil.TIS_ATTRIBUTE_TYPES);
 
     List<SearchParameter> searchParameters = new ArrayList<SearchParameter>();
 

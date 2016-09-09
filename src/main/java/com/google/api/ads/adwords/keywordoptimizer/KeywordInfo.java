@@ -15,6 +15,9 @@
 package com.google.api.ads.adwords.keywordoptimizer;
 
 import com.google.api.ads.adwords.axis.v201607.cm.Keyword;
+
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaService;
+
 import javax.annotation.Nullable;
 import org.apache.commons.lang.SystemUtils;
 
@@ -24,19 +27,26 @@ import org.apache.commons.lang.SystemUtils;
  */
 public class KeywordInfo {
   private final Keyword keyword;
-  private final TrafficEstimate estimate;
+  private final IdeaEstimate ideaEstimate;
+  private final TrafficEstimate trafficEstimate;
   private final Double score;
 
   /**
    * Creates a new {@link KeywordInfo} object with the given attributes.
-   * 
+   *
    * @param keyword the keyword itself
-   * @param estimate the estimated traffic statistics
+   * @param ideaEstimate statistics from the {@link TargetingIdeaService}
+   * @param trafficEstimate the estimated traffic statistics
    * @param score the quality score
    */
-  public KeywordInfo(Keyword keyword, @Nullable TrafficEstimate estimate, @Nullable Double score) {
+  public KeywordInfo(
+      Keyword keyword,
+      @Nullable IdeaEstimate ideaEstimate,
+      @Nullable TrafficEstimate trafficEstimate,
+      @Nullable Double score) {
     this.keyword = keyword;
-    this.estimate = estimate;
+    this.ideaEstimate = ideaEstimate;
+    this.trafficEstimate = trafficEstimate;
     this.score = score;
   }
 
@@ -50,8 +60,15 @@ public class KeywordInfo {
   /**
    * Returns the estimated traffic statistics.
    */
-  public TrafficEstimate getEstimate() {
-    return estimate;
+  public TrafficEstimate getTrafficEstimate() {
+    return trafficEstimate;
+  }
+  
+  /**
+   * Returns the estimated search statistics.
+   */
+  public IdeaEstimate getIdeaEstimate() {
+    return ideaEstimate;
   }
 
   /**
@@ -65,7 +82,14 @@ public class KeywordInfo {
    * Returns whether a traffic estimate has been set.
    */
   public boolean hasEstimate() {
-    return estimate != null;
+    return trafficEstimate != null;
+  }
+  
+  /**
+   * Returns whether a search estimate has been set.
+   */
+  public boolean hasSearchEstimate() {
+    return ideaEstimate != null;
   }
 
   /**
@@ -85,7 +109,7 @@ public class KeywordInfo {
     }
     out.append(SystemUtils.LINE_SEPARATOR);
     if (hasEstimate()) {
-      out.append(estimate);
+      out.append(trafficEstimate);
     }
 
     return out.toString();

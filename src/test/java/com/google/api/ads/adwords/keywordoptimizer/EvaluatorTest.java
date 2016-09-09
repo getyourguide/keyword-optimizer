@@ -68,9 +68,9 @@ public class EvaluatorTest {
         .withMaxCpc(maxCpc)
         .build();
     keywords = new KeywordCollection(campaignSettings);
-    keywords.add(new KeywordInfo(plumbing, null, null));
-    keywords.add(new KeywordInfo(plumbingBroad, null, null));
-    keywords.add(new KeywordInfo(plumbingSpecialist, null, null));
+    keywords.add(new KeywordInfo(plumbing, IdeaEstimate.EMPTY_ESTIMATE, null, null));
+    keywords.add(new KeywordInfo(plumbingBroad, IdeaEstimate.EMPTY_ESTIMATE, null, null));
+    keywords.add(new KeywordInfo(plumbingSpecialist, IdeaEstimate.EMPTY_ESTIMATE, null, null));
 
     minStats = new StatsEstimate();
     minStats.setClicksPerDay(10F);
@@ -166,7 +166,8 @@ public class EvaluatorTest {
 
       for (KeywordInfo keyword : keywords) {
         TrafficEstimate te = new TrafficEstimate(minStats, maxStats);
-        estimates.add(new KeywordInfo(keyword.getKeyword(), te, null));
+        estimates.add(
+            new KeywordInfo(keyword.getKeyword(), IdeaEstimate.EMPTY_ESTIMATE, te, null));
       }
 
       return estimates;

@@ -28,8 +28,8 @@ import org.slf4j.LoggerFactory;
 public class CachedEstimator implements TrafficEstimator {
   private static final Logger logger = LoggerFactory.getLogger(CachedEstimator.class);
 
-  // Map storing traffic estimates by keyword.
-  private final Map<Keyword, TrafficEstimate> cache;
+  // Map storing keyword information by keyword.
+  private final Map<Keyword, KeywordInfo> cache;
   private final TrafficEstimator estimator;
 
   /**
@@ -40,7 +40,7 @@ public class CachedEstimator implements TrafficEstimator {
    */
   public CachedEstimator(TrafficEstimator estimator) {
     this.estimator = estimator;
-    cache = new HashMap<Keyword, TrafficEstimate>();
+    cache = new HashMap<Keyword, KeywordInfo>();
   }
 
   @Override
@@ -49,21 +49,21 @@ public class CachedEstimator implements TrafficEstimator {
     KeywordCollection retrieveKeywords = new KeywordCollection(keywords.getCampaignConfiguration());
 
     // Check if there are any keywords already in the cache.
-    for (Keyword keyword : keywords.getKeywords()) {
-      TrafficEstimate cachedEstimate = cache.get(keyword);
+    for (KeywordInfo givenInfo : keywords) {
+      KeywordInfo cachedInfo = cache.get(givenInfo.getKeyword());
 
       // Check if there is a cached entry related to that key which is equal to the keyword.
-      if (cachedEstimate != null) {
-        cachedEstimates.add(new KeywordInfo(keyword, cachedEstimate, null));
+      if (cachedInfo != null) {
+        cachedEstimates.add(cachedInfo);
       } else {
-        retrieveKeywords.add(new KeywordInfo(keyword, null, null));
+        retrieveKeywords.add(givenInfo);
       }
     }
 
     // Actually retrieve stats for all keywords that are not cached.
     KeywordCollection estimates = estimator.estimate(retrieveKeywords);
     for (KeywordInfo estimate : estimates) {
-      cache.put(estimate.getKeyword(), estimate.getEstimate());
+      cache.put(estimate.getKeyword(), estimate);
       estimates.add(estimate);
     }
 

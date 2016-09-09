@@ -616,7 +616,7 @@ public class KeywordOptimizer {
       printer.println(CSV_JOINER.join(CSV_HEADERS));
 
       for (KeywordInfo eval : bestKeywords.getListSortedByScore()) {
-        TrafficEstimate estimate = eval.getEstimate();
+        TrafficEstimate estimate = eval.getTrafficEstimate();
         Object[] rowData = {
           eval.getKeyword().getText(),
           eval.getKeyword().getMatchType(),

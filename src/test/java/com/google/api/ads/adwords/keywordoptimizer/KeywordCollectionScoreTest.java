@@ -54,22 +54,22 @@ public class KeywordCollectionScoreTest {
     alpha = new Keyword();
     alpha.setText("alpha");
     alpha.setMatchType(KeywordMatchType.EXACT);
-    alphaInfo = new KeywordInfo(alpha, null, 3d);
+    alphaInfo = new KeywordInfo(alpha, null, null, 3d);
 
     beta = new Keyword();
     beta.setText("beta");
     beta.setMatchType(KeywordMatchType.EXACT);
-    betaInfo = new KeywordInfo(beta, null, 1d);
+    betaInfo = new KeywordInfo(beta, null, null, 1d);
     
     betaBroad = new Keyword();
     betaBroad.setText("beta");
     betaBroad.setMatchType(KeywordMatchType.BROAD);
-    betaBroadInfo = new KeywordInfo(betaBroad, null, 2d);
+    betaBroadInfo = new KeywordInfo(betaBroad, null, null, 2d);
 
     gamma = new Keyword();
     gamma.setText("gamma");
     gamma.setMatchType(KeywordMatchType.EXACT);
-    gammaInfo = new KeywordInfo(gamma, null, 4d);
+    gammaInfo = new KeywordInfo(gamma, null, null, 4d);
 
     maxCpc = new Money();
     maxCpc.setMicroAmount(1000000L); // 1 usd

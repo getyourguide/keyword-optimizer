@@ -67,9 +67,9 @@ public class TrafficEstimatorTest {
         .withMaxCpc(maxCpc)
         .build();
     keywords = new KeywordCollection(campaignSettings);
-    keywords.add(new KeywordInfo(plumbing, null, null));
-    keywords.add(new KeywordInfo(plumbingBroad, null, null));
-    keywords.add(new KeywordInfo(plumbingSpecialist, null, null));
+    keywords.add(new KeywordInfo(plumbing, null, null, null));
+    keywords.add(new KeywordInfo(plumbingBroad, null, null, null));
+    keywords.add(new KeywordInfo(plumbingSpecialist, null, null, null));
 
     minStats = new StatsEstimate();
     minStats.setClicksPerDay(10F);
@@ -114,11 +114,13 @@ public class TrafficEstimatorTest {
     KeywordCollection estimates = trafficEstimator.estimate(keywords);
 
     for (KeywordInfo keyword : estimates) {
-      assertEquals(10D, keyword.getEstimate().getMin().getClicksPerDay().doubleValue(), 0);
-      assertEquals(1000D, keyword.getEstimate().getMin().getImpressionsPerDay().doubleValue(), 0);
+      assertEquals(10D, keyword.getTrafficEstimate().getMin().getClicksPerDay().doubleValue(), 0);
+      assertEquals(
+          1000D, keyword.getTrafficEstimate().getMin().getImpressionsPerDay().doubleValue(), 0);
 
-      assertEquals(20D, keyword.getEstimate().getMax().getClicksPerDay().doubleValue(), 0);
-      assertEquals(2000D, keyword.getEstimate().getMax().getImpressionsPerDay().doubleValue(), 0);
+      assertEquals(20D, keyword.getTrafficEstimate().getMax().getClicksPerDay().doubleValue(), 0);
+      assertEquals(
+          2000D, keyword.getTrafficEstimate().getMax().getImpressionsPerDay().doubleValue(), 0);
     }
   }
 
@@ -130,8 +132,9 @@ public class TrafficEstimatorTest {
     KeywordCollection estimates = trafficEstimator.estimate(keywords);
 
     for (KeywordInfo keyword : estimates) {
-      assertEquals(15D, keyword.getEstimate().getMean().getClicksPerDay().doubleValue(), 0);
-      assertEquals(1500D, keyword.getEstimate().getMean().getImpressionsPerDay().doubleValue(), 0);
+      assertEquals(15D, keyword.getTrafficEstimate().getMean().getClicksPerDay().doubleValue(), 0);
+      assertEquals(
+          1500D, keyword.getTrafficEstimate().getMean().getImpressionsPerDay().doubleValue(), 0);
     }
   }
 
@@ -145,7 +148,7 @@ public class TrafficEstimatorTest {
 
       for (KeywordInfo keyword : keywords) {
         TrafficEstimate te = new TrafficEstimate(minStats, maxStats);
-        estimates.add(new KeywordInfo(keyword.getKeyword(), te, null));
+        estimates.add(new KeywordInfo(keyword.getKeyword(), null, te, null));
       }
 
       return estimates;

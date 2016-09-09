@@ -20,18 +20,41 @@ import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
 import com.google.api.ads.adwords.axis.v201607.cm.Language;
 import com.google.api.ads.adwords.axis.v201607.cm.Location;
 import com.google.api.ads.adwords.axis.v201607.cm.Money;
+
+import com.google.api.ads.adwords.axis.v201607.o.Attribute;
+import com.google.api.ads.adwords.axis.v201607.o.AttributeType;
+import com.google.api.ads.adwords.axis.v201607.o.DoubleAttribute;
+
 import com.google.api.ads.adwords.axis.v201607.o.LanguageSearchParameter;
 import com.google.api.ads.adwords.axis.v201607.o.LocationSearchParameter;
+
+import com.google.api.ads.adwords.axis.v201607.o.LongAttribute;
+import com.google.api.ads.adwords.axis.v201607.o.MoneyAttribute;
+import com.google.api.ads.adwords.axis.v201607.o.MonthlySearchVolume;
+import com.google.api.ads.adwords.axis.v201607.o.MonthlySearchVolumeAttribute;
+
 import com.google.api.ads.adwords.axis.v201607.o.SearchParameter;
 import com.google.api.ads.adwords.axis.v201607.o.StatsEstimate;
+
+import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaService;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility functions (math, strings, ...) for various other classes in this project.
  */
 public class KeywordOptimizerUtil {
+  // Attribute types requested from the TargetingIdeaService.
+  protected static final AttributeType[] TIS_ATTRIBUTE_TYPES = new AttributeType[] {
+        AttributeType.KEYWORD_TEXT,
+        AttributeType.SEARCH_VOLUME,
+        AttributeType.AVERAGE_CPC,
+        AttributeType.COMPETITION,
+        AttributeType.TARGETED_MONTHLY_SEARCHES
+      };
+  
   private static final String PLACEHOLDER_NULL = "       ---";
   private static final String FORMAT_NUMBER = "%10.3f";
   private static final String FORMAT_MONEY = "%10.2f";
@@ -235,6 +258,18 @@ public class KeywordOptimizerUtil {
   }
 
   /**
+   * Convenience method for creating a money object.
+   *
+   * @param microAmount the amount in micros
+   * @return the newly created {@link Money} object
+   */
+  public static Money createMoney(long microAmount) {
+    Money money = new Money();
+    money.setMicroAmount(microAmount);
+    return money;
+  }
+  
+  /**
    * Formats a given number in a default format (3 decimals, padded left to 10 characters).
    * 
    * @param nr a number
@@ -344,5 +379,43 @@ public class KeywordOptimizerUtil {
     // Any others are not supported right now.
     
     return parameters;
+  }
+  
+  /**
+   * Converts a given map of attribute data from the {@link TargetingIdeaService} to {@link
+   * IdeaEstimate} object.
+   *
+   * @param attributeData map of attribute data as returned by the {@link TargetingIdeaService}
+   * @return a {@link IdeaEstimate} object containing typed data
+   */
+  public static IdeaEstimate toSearchEstimate(Map<AttributeType, Attribute> attributeData) {
+    LongAttribute searchVolumeAttribute =
+        (LongAttribute) attributeData.get(AttributeType.SEARCH_VOLUME);
+    MoneyAttribute averageCpcAttribute =
+        (MoneyAttribute) attributeData.get(AttributeType.AVERAGE_CPC);
+    DoubleAttribute competitionAttribute =
+        (DoubleAttribute) attributeData.get(AttributeType.COMPETITION);
+    MonthlySearchVolumeAttribute targetedMonthlySearchesAttribute =
+        (MonthlySearchVolumeAttribute) attributeData.get(AttributeType.TARGETED_MONTHLY_SEARCHES);
+
+    double competition = 0D;
+    if (competitionAttribute != null && competitionAttribute.getValue() != null) {
+      competition = competitionAttribute.getValue();
+    }
+    long searchVolume = 0L;
+    if (searchVolumeAttribute != null && searchVolumeAttribute.getValue() != null) {
+      searchVolume = searchVolumeAttribute.getValue();
+    }
+    Money averageCpc = KeywordOptimizerUtil.createMoney(0L);
+    if (averageCpcAttribute != null && averageCpcAttribute.getValue() != null) {
+      averageCpc = averageCpcAttribute.getValue();
+    }
+    MonthlySearchVolume[] targetedMonthlySearches = new MonthlySearchVolume[] {};
+    if (targetedMonthlySearchesAttribute != null
+        && targetedMonthlySearchesAttribute.getValue() != null) {
+      targetedMonthlySearches = targetedMonthlySearchesAttribute.getValue();
+    }
+
+    return new IdeaEstimate(competition, searchVolume, averageCpc, targetedMonthlySearches);
   }
 }

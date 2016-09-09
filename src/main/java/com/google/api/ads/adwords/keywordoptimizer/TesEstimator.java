@@ -126,7 +126,10 @@ public class TesEstimator implements TrafficEstimator {
       KeywordInfo originalKeyword = sortedKeywords.get(i);
       KeywordInfo estimate =
           new KeywordInfo(
-              originalKeyword.getKeyword(), new TrafficEstimate(keywordEstimates[i]), null);
+              originalKeyword.getKeyword(),
+              originalKeyword.getIdeaEstimate(),
+              new TrafficEstimate(keywordEstimates[i]),
+              null);
       estimates.add(estimate);
     }
     return estimates;

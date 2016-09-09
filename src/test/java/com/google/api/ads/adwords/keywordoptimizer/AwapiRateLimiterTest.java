@@ -111,7 +111,7 @@ public class AwapiRateLimiterTest {
     
     long endTime = System.currentTimeMillis();
     long seconds = (endTime - startTime) / SECOND_TO_MILLIS;
-    assertTrue(seconds > WAIT_AFTER_SECONDS);
+    assertTrue(seconds >= WAIT_AFTER_SECONDS);
   }
   
   /**
