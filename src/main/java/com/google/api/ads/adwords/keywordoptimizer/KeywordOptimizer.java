@@ -14,9 +14,9 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201607.cm.Money;
-import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaServiceInterface;
+import com.google.api.ads.adwords.axis.v201609.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201609.cm.Money;
+import com.google.api.ads.adwords.axis.v201609.o.TargetingIdeaServiceInterface;
 import com.google.api.ads.adwords.keywordoptimizer.CampaignConfiguration.CampaignConfigurationBuilder;
 import com.google.api.ads.common.lib.conf.ConfigurationLoadException;
 import com.google.api.ads.common.lib.exception.OAuthException;
@@ -58,11 +58,34 @@ public class KeywordOptimizer {
   private static final String ADS_PROPERTIES_DEFAULT_PATH = "ads.properties";
   private static final int LINE_MAX_WIDTH = 80;
   private static final Joiner CSV_JOINER = Joiner.on(",");
-  private static final String[] CSV_HEADERS = {"Keyword", "Match Type", "Score",
-      "Impressions (min)", "Impressions (mean)", "Impressions (max)", "Clicks (min)",
-      "Clicks (mean)", "Clicks (max)", "Ctr (min)", "Ctr (mean)", "Ctr (max)",
-      "Avg. Position (min)", "Avg. Position (mean)", "Avg. Position (max)", "Avg. Cpc (min)",
-      "Avg. Cpc (mean)", "Avg. Cpc (max)", "Cost (min)", "Cost (mean)", "Cost (max)"};
+  private static final String[] CSV_HEADERS = {
+    "Keyword",
+    "Match Type",
+    "Score",
+    "Impressions (min)",
+    "Impressions (mean)",
+    "Impressions (max)",
+    "Clicks (min)",
+    "Clicks (mean)",
+    "Clicks (max)",
+    "Ctr (min)",
+    "Ctr (mean)",
+    "Ctr (max)",
+    "Avg. Position (min)",
+    "Avg. Position (mean)",
+    "Avg. Position (max)",
+    "Avg. Cpc (min)",
+    "Avg. Cpc (mean)",
+    "Avg. Cpc (max)",
+    "Cost (min)",
+    "Cost (mean)",
+    "Cost (max)"
+  };
+  private static final String[] BULK_SHEET_HEADERS = {
+    "Ad group ID", "Keyword", "Match type", "Keyword state", "Action"
+  };
+  private static final String BULK_SHEET_STATUS = "enabled";
+  private static final String BULK_SHEET_ACTION = "add";
 
   /**
    * Available output modes for results. An output mode may or may not need an addition file 
@@ -70,7 +93,8 @@ public class KeywordOptimizer {
    */
   private enum OutputMode {
     CSV(true),
-    CONSOLE(false);
+    CONSOLE(false),
+    BULK_SHEET(true);
 
     private boolean outputFileRequired;
 
@@ -284,8 +308,9 @@ public class KeywordOptimizer {
 
     OptionBuilder.withLongOpt("output");
     OptionBuilder.withDescription(
-        "Mode for outputting results (CONSOLE / CSV)\nNote: If set to CSV, then "
-        + "option -of also has to be specified.");
+        "Mode for outputting results (CONSOLE / CSV / BULK_SHEET)\nNote: If set to CSV / "
+        + "BULK_SHEET, then option -of also has to be specified. If set to BULK_SHEET, then option "
+        + "-ag also has to be specified");
     OptionBuilder.hasArg(true);
     OptionBuilder.hasArgs(2);
     OptionBuilder.withArgName("mode");
@@ -294,10 +319,17 @@ public class KeywordOptimizer {
 
     OptionBuilder.withLongOpt("output-file");
     OptionBuilder.withDescription(
-        "File to for writing output data (only needed if option -o is specified).");
+        "File to for writing output data (only needed if option -o is set to CSV / BULK_SHEET).");
     OptionBuilder.hasArg(true);
     OptionBuilder.withArgName("file");
     options.addOption(OptionBuilder.create("of"));
+    
+    OptionBuilder.withLongOpt("ad-group-id");
+    OptionBuilder.withDescription(
+        "Ad Group ID for bulk sheet output (only needed if option -o is set to BULK_SHEET).");
+    OptionBuilder.hasArg(true);
+    OptionBuilder.withArgName("id");
+    options.addOption(OptionBuilder.create("ag"));
 
     return options;
   }
@@ -580,6 +612,9 @@ public class KeywordOptimizer {
         case CSV:
           outputCsv(cmdLine, bestKeywords);
           break;
+        case BULK_SHEET:
+          outputBulksheet(cmdLine, bestKeywords);
+          break;
         default:
           throw new KeywordOptimizerException("Parameter -o is required");
       }
@@ -639,6 +674,46 @@ public class KeywordOptimizer {
           KeywordOptimizerUtil.format(estimate.getMin().getTotalCost()),
           KeywordOptimizerUtil.format(estimate.getMean().getTotalCost()),
           KeywordOptimizerUtil.format(estimate.getMax().getTotalCost())
+        };
+
+        printer.println(CSV_JOINER.join(rowData));
+      }
+      printer.close();
+    } catch (IOException e) {
+      throw new KeywordOptimizerException("Error writing to output file", e);
+    }
+  }
+  
+  /**
+   * Outputs the results as a csv file that can be used for bulk upload (sorted, best first).
+   * See https://support.google.com/adwords/answer/2477116.
+   *
+   * @param cmdLine the parsed command line parameters
+   * @param bestKeywords the optimized set of keywords
+   * @throws KeywordOptimizerException in case there is a problem writing to the output file
+   */
+  private static void outputBulksheet(CommandLine cmdLine, KeywordCollection bestKeywords)
+      throws KeywordOptimizerException {
+    if (!cmdLine.hasOption("of")) {
+      throw new KeywordOptimizerException("No output file (option -of specified)");
+    }
+    if (!cmdLine.hasOption("ag")) {
+      throw new KeywordOptimizerException("No ad group ID (option -ag specified)");
+    }
+    
+    String adGroupId = cmdLine.getOptionValue("ag");
+
+    try {
+      PrintStream printer = new PrintStream(cmdLine.getOptionValue("of"));
+      printer.println(CSV_JOINER.join(BULK_SHEET_HEADERS));
+
+      for (KeywordInfo eval : bestKeywords.getListSortedByScore()) {
+        Object[] rowData = {
+          adGroupId,
+          eval.getKeyword().getText(),
+          eval.getKeyword().getMatchType(),
+          BULK_SHEET_STATUS,
+          BULK_SHEET_ACTION
         };
 
         printer.println(CSV_JOINER.join(rowData));

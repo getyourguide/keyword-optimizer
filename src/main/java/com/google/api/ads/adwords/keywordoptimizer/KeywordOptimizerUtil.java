@@ -14,29 +14,29 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201607.cm.Criterion;
-import com.google.api.ads.adwords.axis.v201607.cm.Keyword;
-import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201607.cm.Language;
-import com.google.api.ads.adwords.axis.v201607.cm.Location;
-import com.google.api.ads.adwords.axis.v201607.cm.Money;
+import com.google.api.ads.adwords.axis.v201609.cm.Criterion;
+import com.google.api.ads.adwords.axis.v201609.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201609.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201609.cm.Language;
+import com.google.api.ads.adwords.axis.v201609.cm.Location;
+import com.google.api.ads.adwords.axis.v201609.cm.Money;
 
-import com.google.api.ads.adwords.axis.v201607.o.Attribute;
-import com.google.api.ads.adwords.axis.v201607.o.AttributeType;
-import com.google.api.ads.adwords.axis.v201607.o.DoubleAttribute;
+import com.google.api.ads.adwords.axis.v201609.o.Attribute;
+import com.google.api.ads.adwords.axis.v201609.o.AttributeType;
+import com.google.api.ads.adwords.axis.v201609.o.DoubleAttribute;
 
-import com.google.api.ads.adwords.axis.v201607.o.LanguageSearchParameter;
-import com.google.api.ads.adwords.axis.v201607.o.LocationSearchParameter;
+import com.google.api.ads.adwords.axis.v201609.o.LanguageSearchParameter;
+import com.google.api.ads.adwords.axis.v201609.o.LocationSearchParameter;
 
-import com.google.api.ads.adwords.axis.v201607.o.LongAttribute;
-import com.google.api.ads.adwords.axis.v201607.o.MoneyAttribute;
-import com.google.api.ads.adwords.axis.v201607.o.MonthlySearchVolume;
-import com.google.api.ads.adwords.axis.v201607.o.MonthlySearchVolumeAttribute;
+import com.google.api.ads.adwords.axis.v201609.o.LongAttribute;
+import com.google.api.ads.adwords.axis.v201609.o.MoneyAttribute;
+import com.google.api.ads.adwords.axis.v201609.o.MonthlySearchVolume;
+import com.google.api.ads.adwords.axis.v201609.o.MonthlySearchVolumeAttribute;
 
-import com.google.api.ads.adwords.axis.v201607.o.SearchParameter;
-import com.google.api.ads.adwords.axis.v201607.o.StatsEstimate;
+import com.google.api.ads.adwords.axis.v201609.o.SearchParameter;
+import com.google.api.ads.adwords.axis.v201609.o.StatsEstimate;
 
-import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaService;
+import com.google.api.ads.adwords.axis.v201609.o.TargetingIdeaService;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;

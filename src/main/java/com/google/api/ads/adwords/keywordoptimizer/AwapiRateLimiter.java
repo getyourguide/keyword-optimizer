@@ -17,9 +17,9 @@ package com.google.api.ads.adwords.keywordoptimizer;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-import com.google.api.ads.adwords.axis.v201607.cm.ApiError;
-import com.google.api.ads.adwords.axis.v201607.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201607.cm.RateExceededError;
+import com.google.api.ads.adwords.axis.v201609.cm.ApiError;
+import com.google.api.ads.adwords.axis.v201609.cm.ApiException;
+import com.google.api.ads.adwords.axis.v201609.cm.RateExceededError;
 import com.google.common.util.concurrent.AtomicLongMap;
 import com.google.common.util.concurrent.Uninterruptibles;
 import java.rmi.RemoteException;

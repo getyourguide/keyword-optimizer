@@ -14,7 +14,7 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201607.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201609.cm.Keyword;
 
 /**
  * Retrieves traffic estimates / statistics for given {@link KeywordCollection}. A

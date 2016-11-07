@@ -14,11 +14,11 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201607.cm.Criterion;
-import com.google.api.ads.adwords.axis.v201607.cm.Language;
-import com.google.api.ads.adwords.axis.v201607.cm.Location;
-import com.google.api.ads.adwords.axis.v201607.cm.Money;
-import com.google.api.ads.adwords.axis.v201607.o.TrafficEstimatorService;
+import com.google.api.ads.adwords.axis.v201609.cm.Criterion;
+import com.google.api.ads.adwords.axis.v201609.cm.Language;
+import com.google.api.ads.adwords.axis.v201609.cm.Location;
+import com.google.api.ads.adwords.axis.v201609.cm.Money;
+import com.google.api.ads.adwords.axis.v201609.o.TrafficEstimatorService;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.List;

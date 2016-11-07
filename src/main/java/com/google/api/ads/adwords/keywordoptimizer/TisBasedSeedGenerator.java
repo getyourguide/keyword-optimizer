@@ -14,21 +14,21 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201607.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
-import com.google.api.ads.adwords.axis.v201607.cm.Paging;
-import com.google.api.ads.adwords.axis.v201607.o.Attribute;
-import com.google.api.ads.adwords.axis.v201607.o.AttributeType;
-import com.google.api.ads.adwords.axis.v201607.o.StringAttribute;
-import com.google.api.ads.adwords.axis.v201607.o.TargetingIdea;
-import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaPage;
-import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaSelector;
-import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaService;
-import com.google.api.ads.adwords.axis.v201607.o.TargetingIdeaServiceInterface;
+import com.google.api.ads.adwords.axis.v201609.cm.ApiException;
+import com.google.api.ads.adwords.axis.v201609.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201609.cm.Paging;
+import com.google.api.ads.adwords.axis.v201609.o.Attribute;
+import com.google.api.ads.adwords.axis.v201609.o.AttributeType;
+import com.google.api.ads.adwords.axis.v201609.o.StringAttribute;
+import com.google.api.ads.adwords.axis.v201609.o.TargetingIdea;
+import com.google.api.ads.adwords.axis.v201609.o.TargetingIdeaPage;
+import com.google.api.ads.adwords.axis.v201609.o.TargetingIdeaSelector;
+import com.google.api.ads.adwords.axis.v201609.o.TargetingIdeaService;
+import com.google.api.ads.adwords.axis.v201609.o.TargetingIdeaServiceInterface;
 import com.google.api.ads.common.lib.utils.Maps;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -73,7 +73,7 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
   protected ImmutableMap<String, IdeaEstimate> getKeywordsAndEstimates()
       throws KeywordOptimizerException {
     final TargetingIdeaSelector selector = getSelector();
-    Builder<String, IdeaEstimate> keywordsAndEstimatesBuilder = ImmutableMap.builder();
+    Map<String, IdeaEstimate> keywordsAndEstimates = new HashMap<String, IdeaEstimate>();
     
     try {
       int offset = 0;
@@ -99,7 +99,7 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
                 (StringAttribute) attributeData.get(AttributeType.KEYWORD_TEXT);
             IdeaEstimate estimate = KeywordOptimizerUtil.toSearchEstimate(attributeData);
             
-            keywordsAndEstimatesBuilder.put(keywordAttribute.getValue(), estimate);
+            keywordsAndEstimates.put(keywordAttribute.getValue(), estimate);
           }
         }
         offset += PAGE_SIZE;
@@ -111,7 +111,7 @@ public abstract class TisBasedSeedGenerator extends AbstractSeedGenerator {
       throw new KeywordOptimizerException("Problem while connecting to the AdWords API", e);
     }
 
-    return keywordsAndEstimatesBuilder.build();
+    return ImmutableMap.copyOf(keywordsAndEstimates);
   }
   
 }

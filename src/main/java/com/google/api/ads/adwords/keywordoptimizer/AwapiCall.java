@@ -14,7 +14,7 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201607.cm.ApiException;
+import com.google.api.ads.adwords.axis.v201609.cm.ApiException;
 import java.rmi.RemoteException;
 
 /**

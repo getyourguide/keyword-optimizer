@@ -14,8 +14,8 @@
 
 package com.google.api.ads.adwords.keywordoptimizer;
 
-import com.google.api.ads.adwords.axis.v201607.cm.Keyword;
-import com.google.api.ads.adwords.axis.v201607.cm.KeywordMatchType;
+import com.google.api.ads.adwords.axis.v201609.cm.Keyword;
+import com.google.api.ads.adwords.axis.v201609.cm.KeywordMatchType;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Ordering;
 import java.util.Collection;
@@ -34,7 +34,7 @@ import org.apache.commons.lang.SystemUtils;
  * as keys and {@link KeywordInfo}'s as values to eliminate duplicates.
  */
 public class KeywordCollection implements Iterable<KeywordInfo> {
-  private static final Joiner JOINER = Joiner.on(SystemUtils.FILE_SEPARATOR);
+  private static final Joiner JOINER = Joiner.on(SystemUtils.LINE_SEPARATOR);
   private final CampaignConfiguration campaignConfiguration;
   private final Map<Keyword, KeywordInfo> keywords;
 

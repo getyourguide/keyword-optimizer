@@ -31,7 +31,6 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Charsets;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -144,9 +143,8 @@ public class AdWordsApiUtil {
    * Reads and returns the user agent setting from the properties file.
    * 
    * @throws ConfigurationLoadException in case of an error reading the configuration file
-   * @throws ValidationException in case the user agent is not specified correctly
    */
-  private String getUserAgentFromConfig() throws ConfigurationLoadException, ValidationException {
+  private String getUserAgentFromConfig() throws ConfigurationLoadException {
     InputStream inputStream = null;
 
     try {
@@ -157,11 +155,8 @@ public class AdWordsApiUtil {
       String userAgent = properties.getProperty(PROPERTY_USER_AGENT, "");
       
       // Check that user agent is not empty or the default.
-      if (Strings.isNullOrEmpty(userAgent)
-          || userAgent.contains(DEFAULT_USER_AGENT)) {
-        throw new ValidationException(String.format(
-            "User agent must be set and not be the default [%s]", DEFAULT_USER_AGENT),
-            "userAgent");
+      if (userAgent.equals(DEFAULT_USER_AGENT)) {
+        return "";
       }      
       return userAgent;
     } catch (IOException e) {

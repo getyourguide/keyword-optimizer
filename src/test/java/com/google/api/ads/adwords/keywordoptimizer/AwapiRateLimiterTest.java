@@ -17,10 +17,10 @@ package com.google.api.ads.adwords.keywordoptimizer;
 import static org.hamcrest.core.Is.isA;
 import static org.junit.Assert.assertTrue;
 
-import com.google.api.ads.adwords.axis.v201607.cm.ApiError;
-import com.google.api.ads.adwords.axis.v201607.cm.ApiException;
-import com.google.api.ads.adwords.axis.v201607.cm.RateExceededError;
-import com.google.api.ads.adwords.axis.v201607.cm.RateExceededErrorReason;
+import com.google.api.ads.adwords.axis.v201609.cm.ApiError;
+import com.google.api.ads.adwords.axis.v201609.cm.ApiException;
+import com.google.api.ads.adwords.axis.v201609.cm.RateExceededError;
+import com.google.api.ads.adwords.axis.v201609.cm.RateExceededErrorReason;
 import java.rmi.RemoteException;
 import org.junit.Rule;
 import org.junit.Test;
