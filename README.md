@@ -50,6 +50,16 @@ keywords, the overall quality of the keyword set is likely to increase.
 of the AdWords API. As these services [return dummy data for test accounts](https://developers.google.com/adwords/api/docs/test-accounts#differences_between_test_accounts_and_production_accounts),
 this tool will not work as intended for test accounts either.
 
+## Structure
+The code is organized in three separate Maven projects:
+* **keyword-optimizer-core** contains the core library and code necessary to
+run the tool from the command line. Previously, all code was bundled here.
+* **keyword-optimizer-api** contains a REST API on top of the core project. The
+intention of this API is to allow developers to use this tool with programming
+languages other than Java.
+* **keyword-optimizer** is the parent project that encompasses both projects
+above as modules.
+
 ## Quick start
 
 ### Prerequisites
@@ -134,12 +144,51 @@ Alternatively, you can run the tool using Maven as follows.
 
 ```
 $ mvn exec:java -Dexec.mainClass="com.google.api.ads.adwords.keywordoptimizer.KeywordOptimizer" \
--Dexec.args="-ap src/main/resources/ads.properties -kp src/main/resources/keyword-optimizer.properties"
+-Dexec.args="-ap keyword-optimizer-core/src/main/resources/ads.properties -kp keyword-optimizer-core/src/main/resources/keyword-optimizer.properties"
 ```
 
 #### Running in Eclipse
 You can also run the tool from Eclipse by starting the main class
 `com.google.api.ads.adwords.keywordoptimizer.KeywordOptimizer`.
+
+#### Running the REST API server
+Maven is configured to bundle the components needed for the API server into a
+war file (`keyword-optimizer-api/target/keyword-optimizer-api.war`). You can
+deploy this war file on all common Java application servers to run the API.
+Don't forget to customize the property files before running the build process
+(see above). 
+
+Alternatively, we included a standalone server based on
+[Jetty](https://en.wikipedia.org/wiki/Jetty), which you can run by starting
+`com.google.api.ads.adwords.keywordoptimizer.api.ApiServer`. It expects the same
+arguments as the command-line version for the properties files (see below). In
+addition, you can optionally specify a port and context path for the HTTP
+server.
+
+If you use the default parameters, you can use the REST API via the following
+URLs:
+* **http://localhost:8080/keyword-optimizer/api/optimize/url?url=<url>:**
+Uses a given URL to generate seed keywords (replace **<url>** with the actual
+URL). Equivalent to the `-su` command-line parameter.
+* **http://localhost:8080/keyword-optimizer/api/optimize/category?category=<category>:**
+Uses a given URL to generate seed keywords (replace **<category>** with the
+actual category ID). Equivalent to  the `-sc` command-line parameter.
+* **http://localhost:8080/keyword-optimizer/api/optimize/term?term=<term>:**
+Uses a set of search terms to generate seed keywords (replace **<term>** with
+the search term / query. There can be multiple **<term>** parameters). 
+Equivalent to  the `-st` command-line parameter.
+* **http://localhost:8080/keyword-optimizer/api/optimize/keyword?keyword=<keyword>:**
+Uses a set of keywords directly as a seed (replace **<keyword>** with
+the search term / query. There can be multiple **<keyword>** parameters).
+Equivalent to  the `-sk` command-line parameter.
+
+In addition, use the following URL parameters to specify further options:
+* **cpc:** Max. CPC setting, equivalent to the `-cpc` command-line parameter.
+* **m:** Keyword match type, equivalent to the `-m` command-line parameter.
+* **lang:** Language, equivalent to the `-lang` command-line parameter.
+* **loc:** Location, equivalent to the `-loc` command-line parameter.
+
+The results of each call are returned as JSON objects.
 
 ### Command line options
 

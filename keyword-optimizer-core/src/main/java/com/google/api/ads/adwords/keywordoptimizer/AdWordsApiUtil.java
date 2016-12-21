@@ -34,6 +34,7 @@ import com.google.api.client.util.Charsets;
 import com.google.common.collect.Lists;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -148,7 +149,14 @@ public class AdWordsApiUtil {
     InputStream inputStream = null;
 
     try {
-      inputStream = new BufferedInputStream(new FileInputStream(configPath));
+      // If the file exists at the given absolute location, use the supplied path. Otherwise look
+      // in the classpath.
+      File configFile = new File(configPath);
+      if (configFile.exists()) {
+        inputStream = new BufferedInputStream(new FileInputStream(configPath));
+      } else {
+        inputStream = AdWordsApiUtil.class.getResourceAsStream(configPath);
+      }
 
       Properties properties = new Properties();
       properties.load(inputStream);

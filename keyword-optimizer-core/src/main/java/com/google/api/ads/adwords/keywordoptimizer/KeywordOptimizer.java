@@ -96,7 +96,7 @@ public class KeywordOptimizer {
     CONSOLE(false),
     BULK_SHEET(true);
 
-    private boolean outputFileRequired;
+    private final boolean outputFileRequired;
 
     public boolean isOutputFileRequired() {
       return outputFileRequired;
@@ -789,7 +789,7 @@ public class KeywordOptimizer {
   }
 
   /**
-   * Reads settings (keywords / urls / serach terms) line-by-line from a file.
+   * Reads settings (keywords / urls / search terms) line-by-line from a file.
    *
    * @param fileName the name of the file to read from
    * @return a {@link List} of strings line-by-line
@@ -832,7 +832,7 @@ public class KeywordOptimizer {
    * @throws KeywordOptimizerException in case of a problem lading the specified object
    */
   @SuppressWarnings(value = "unchecked")
-  private static <Type> Type createObjectBasedOnProperty(
+  public static <Type> Type createObjectBasedOnProperty(
       Class<Type> clazz, KeywordOptimizerProperty property, OptimizationContext context)
       throws KeywordOptimizerException {
     String className = context.getConfiguration().getString(property.getName());

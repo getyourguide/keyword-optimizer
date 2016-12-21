@@ -270,6 +270,18 @@ public class KeywordOptimizerUtil {
   }
   
   /**
+   * Convenience method for creating a money object.
+   *
+   * @param value the amount in actual currency
+   * @return the newly created {@link Money} object
+   */
+  public static Money createMoney(double value) {
+    Money money = new Money();
+    money.setMicroAmount((long) (value * MICRO_UNITS));
+    return money;
+  }
+  
+  /**
    * Formats a given number in a default format (3 decimals, padded left to 10 characters).
    * 
    * @param nr a number
