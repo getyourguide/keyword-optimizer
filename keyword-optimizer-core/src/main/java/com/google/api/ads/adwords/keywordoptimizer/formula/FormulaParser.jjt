@@ -1,0 +1,147 @@
+// Copyright 2017 Google Inc. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+options {
+  MULTI=true;
+  VISITOR=true;
+  STATIC = false; 
+  NODE_DEFAULT_VOID=true;
+  NODE_PACKAGE="com.google.api.ads.adwords.keywordoptimizer.formula";
+}
+
+PARSER_BEGIN(FormulaParser)
+
+package com.google.api.ads.adwords.keywordoptimizer.formula;
+
+import java.io.StringReader;
+
+public class FormulaParser {
+
+  public FormulaParser(String source) {
+    this(new StringReader(source));
+  }
+ 
+}
+
+PARSER_END(FormulaParser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <"/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/">
+}
+
+TOKEN : /* LITERALS */
+{
+  < INTEGER_LITERAL: ["1"-"9"] (["0"-"9"])* >
+| 
+  < DOUBLE_LITERAL: (["0"-"9"])* "." (["0"-"9"])+ >
+|
+< ADD_OPERATOR: ["+","-"] >
+|
+< MULT_OPERATOR: ["*","/","%"] >
+}
+
+TOKEN : /* IDENTIFIERS */
+{
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+|
+  < #LETTER: [".","a"-"z","A"-"Z"] >
+|
+  < #DIGIT: ["0"-"9"] >
+}
+
+
+/** An Expression. */
+ASTExpression Expression() #Expression : {}
+{
+  AdditiveExpression()
+
+  { return jjtThis; }
+}
+
+/** An Additive Expression. */
+void AdditiveExpression() : 
+{
+  Token t;
+}
+{
+  (
+    MultiplicativeExpression() ( t=<ADD_OPERATOR> MultiplicativeExpression()   { jjtThis.setOperator(t.image); } )*
+  ) #Add(>1)
+
+}
+
+/** A Multiplicative Expression. */
+void MultiplicativeExpression() :
+{
+  Token t;
+}
+{
+  (
+    UnaryExpression() ( t=<MULT_OPERATOR> UnaryExpression() { jjtThis.setOperator(t.image); })*
+  ) #Mult(>1)
+}
+
+/** A Unary Expression. */
+void UnaryExpression() : {}
+{
+  BracketedExpression() | Identifier() | Double() | Integer() 
+}
+
+/** Bracketed Expression. */
+void BracketedExpression() : {}
+{
+  "(" Expression() ")" 
+}
+
+/** An Identifier. */
+void Identifier() #Identifier :
+{
+  Token t;
+}
+{
+  t=<IDENTIFIER>
+  {
+    jjtThis.setName(t.image);
+  }
+}
+
+/** An Integer. */
+void Integer() #Integer :
+{
+  Token t;
+}
+{
+  t=<INTEGER_LITERAL>
+  {
+    jjtThis.setValue(Integer.parseInt(t.image));
+  }
+}
+
+/** A Double. */
+void Double() #Double :
+{
+  Token t;
+}
+{
+  t=<DOUBLE_LITERAL>
+  {
+    jjtThis.setValue(Double.parseDouble(t.image));
+  }
+}
