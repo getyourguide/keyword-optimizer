@@ -16,28 +16,8 @@ package com.google.api.ads.adwords.keywordoptimizer.api;
 
 import com.google.api.ads.adwords.axis.v201609.cm.KeywordMatchType;
 import com.google.api.ads.adwords.axis.v201609.o.TargetingIdeaServiceInterface;
-import com.google.api.ads.adwords.keywordoptimizer.AdWordsApiUtil;
-import com.google.api.ads.adwords.keywordoptimizer.AlternativesFinder;
-import com.google.api.ads.adwords.keywordoptimizer.CachedEstimator;
-import com.google.api.ads.adwords.keywordoptimizer.CampaignConfiguration;
+import com.google.api.ads.adwords.keywordoptimizer.*;
 import com.google.api.ads.adwords.keywordoptimizer.CampaignConfiguration.CampaignConfigurationBuilder;
-import com.google.api.ads.adwords.keywordoptimizer.EstimatorBasedEvaluator;
-import com.google.api.ads.adwords.keywordoptimizer.Evaluator;
-import com.google.api.ads.adwords.keywordoptimizer.KeywordCollection;
-import com.google.api.ads.adwords.keywordoptimizer.KeywordOptimizer;
-import com.google.api.ads.adwords.keywordoptimizer.KeywordOptimizerException;
-import com.google.api.ads.adwords.keywordoptimizer.KeywordOptimizerProperty;
-import com.google.api.ads.adwords.keywordoptimizer.KeywordOptimizerUtil;
-import com.google.api.ads.adwords.keywordoptimizer.OptimizationContext;
-import com.google.api.ads.adwords.keywordoptimizer.Optimizer;
-import com.google.api.ads.adwords.keywordoptimizer.RoundStrategy;
-import com.google.api.ads.adwords.keywordoptimizer.ScoreCalculator;
-import com.google.api.ads.adwords.keywordoptimizer.SeedGenerator;
-import com.google.api.ads.adwords.keywordoptimizer.SimpleSeedGenerator;
-import com.google.api.ads.adwords.keywordoptimizer.TisCategorySeedGenerator;
-import com.google.api.ads.adwords.keywordoptimizer.TisSearchTermsSeedGenerator;
-import com.google.api.ads.adwords.keywordoptimizer.TisUrlSeedGenerator;
-import com.google.api.ads.adwords.keywordoptimizer.TrafficEstimator;
 import com.google.api.ads.common.lib.conf.ConfigurationLoadException;
 import com.google.api.ads.common.lib.exception.OAuthException;
 import com.google.api.ads.common.lib.exception.ValidationException;
@@ -129,6 +109,16 @@ public class OptimizeResource {
     @DefaultValue("false")
     @QueryParam("pretty")
     private boolean prettyPrint;
+
+    private KeywordCollection filterOutput(KeywordCollection keywords) {
+        KeywordCollection filteredKeywords = new KeywordCollection(keywords.getCampaignConfiguration());
+        for (KeywordInfo kwInfo : keywords) {
+            if (kwInfo.getKeyword().getText().contains(filterString)) {
+                filteredKeywords.add(kwInfo);
+            }
+        }
+        return filteredKeywords;
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -314,7 +304,7 @@ public class OptimizeResource {
                 new Optimizer(seedGenerator, alternativesFinder, evaluator, roundStrategy);
 
         KeywordCollection bestKeywords = optimizer.optimize();
-        return bestKeywords;
+        return filterOutput(bestKeywords);
     }
 
     /**
