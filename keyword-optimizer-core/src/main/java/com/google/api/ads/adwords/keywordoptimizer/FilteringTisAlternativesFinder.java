@@ -13,7 +13,7 @@ public class FilteringTisAlternativesFinder extends TisAlternativesFinder {
      */
     public FilteringTisAlternativesFinder(OptimizationContext context) {
         super(context);
-        this.filterString = "eiffel tower";
+        this.filterString = context.getConfiguration().getProperty("filterString").toString();
     }
 
     @Override
