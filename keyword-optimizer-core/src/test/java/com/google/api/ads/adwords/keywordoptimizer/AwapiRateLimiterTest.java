@@ -137,37 +137,6 @@ public class AwapiRateLimiterTest {
   }
   
   /**
-   * Test that AdWords API call failed with RateExceededError with all retries
-   *
-   * @throws InterruptedException
-   */
-  @Test
-  public void testTimeoutWithRateExceededError()
-      throws ApiException, RemoteException, InterruptedException {
-    thrown.expect(RuntimeException.class);
-    thrown.expectCause(isA(ApiException.class));
-    
-    long startTime = System.currentTimeMillis();
-    try {
-      AwapiRateLimiter.getInstance(AwapiRateLimiter.RateLimitBucket.OTHERS)
-          .run(new AwapiCall<Object>() {
-            @Override
-            public Object invoke() throws ApiException {
-              throw rateExceededExceptionLong;
-            }
-          }, TEST_CID);
-    } catch (RuntimeException e) {
-      long endTime = System.currentTimeMillis();
-      long seconds = (endTime - startTime) / SECOND_TO_MILLIS;
-      assertTrue(seconds < LONG_WAIT_AFTER_SECONDS);  // Because it exits immediately.
-      
-      // Wait enough time so it doesn't affect other test cases.
-      Thread.sleep(LONG_WAIT_AFTER_SECONDS * SECOND_TO_MILLIS);
-      throw e;
-    }
-  }
-  
-  /**
    * Test that AdWords API call failed with other ApiException
    */
   @Test
