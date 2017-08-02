@@ -88,7 +88,7 @@ public class KeywordOptimizer {
   private static final String BULK_SHEET_ACTION = "add";
 
   /**
-   * Available output modes for results. An output mode may or may not need an addition file 
+   * Available output modes for results. An output mode may or may not need an addition file
    * parameter.
    */
   private enum OutputMode {
@@ -106,7 +106,7 @@ public class KeywordOptimizer {
       this.outputFileRequired = outputFileRequired;
     }
   }
-  
+
   /**
    * Main method called from the command line.
    *
@@ -160,7 +160,7 @@ public class KeywordOptimizer {
     }
 
     logHeadline("Startup");
-    
+
     // Check output parameters ahead of time.
     checkOutputParameters(cmdLine);
 
@@ -189,7 +189,14 @@ public class KeywordOptimizer {
 
     logHeadline("Optimization");
     KeywordCollection bestKeywords = optimizer.optimize();
-    output(cmdLine, bestKeywords);
+    String filterString = context.getConfiguration().getProperty("filterString").toString();
+    KeywordCollection filteredKeywords = new KeywordCollection(bestKeywords.getCampaignConfiguration());
+    for (KeywordInfo kwInfo : bestKeywords) {
+      if (kwInfo.getKeyword().getText().contains(filterString)) {
+        filteredKeywords.add(kwInfo);
+      }
+    }
+    output(cmdLine, filteredKeywords);
   }
 
   /**
@@ -323,7 +330,7 @@ public class KeywordOptimizer {
     OptionBuilder.hasArg(true);
     OptionBuilder.withArgName("file");
     options.addOption(OptionBuilder.create("of"));
-    
+
     OptionBuilder.withLongOpt("ad-group-id");
     OptionBuilder.withDescription(
         "Ad Group ID for bulk sheet output (only needed if option -o is set to BULK_SHEET).");
@@ -419,13 +426,13 @@ public class KeywordOptimizer {
    */
   private static CampaignConfiguration getCampaignConfiguration(CommandLine cmdLine) {
     CampaignConfigurationBuilder builder = CampaignConfiguration.builder();
-    
+
     // Read the max. Cpc parameter.
     double cpc = Double.parseDouble(cmdLine.getOptionValue("cpc"));
     Money maxCpc = new Money();
     maxCpc.setMicroAmount((long) (cpc * 1000000d));
     builder.withMaxCpc(maxCpc);
-    
+
     // Read the language parameter.
     if (cmdLine.hasOption("lang")) {
       for (String language : cmdLine.getOptionValues("lang")) {
@@ -440,15 +447,15 @@ public class KeywordOptimizer {
     if (cmdLine.hasOption("loc")) {
       for (String location : cmdLine.getOptionValues("loc")) {
         long loc = Long.parseLong(location);
-  
+
         log("Using location: " + loc);
         builder.withLocation(loc);
       }
     }
-    
+
     return builder.build();
   }
-  
+
   /**
    * Creates the seed generator based on the command line options.
    *
@@ -683,7 +690,7 @@ public class KeywordOptimizer {
       throw new KeywordOptimizerException("Error writing to output file", e);
     }
   }
-  
+
   /**
    * Outputs the results as a csv file that can be used for bulk upload (sorted, best first).
    * See https://support.google.com/adwords/answer/2477116.
@@ -700,7 +707,7 @@ public class KeywordOptimizer {
     if (!cmdLine.hasOption("ag")) {
       throw new KeywordOptimizerException("No ad group ID (option -ag specified)");
     }
-    
+
     String adGroupId = cmdLine.getOptionValue("ag");
 
     try {

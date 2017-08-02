@@ -21,7 +21,7 @@ public class FilteringTisAlternativesFinder extends TisAlternativesFinder {
         KeywordCollection results = super.derive(keywords);
         KeywordCollection filteredResults = new KeywordCollection(results.getCampaignConfiguration());
         for (KeywordInfo kwInfo : results) {
-            if (kwInfo.getKeyword().getText().equals(filterString)) {
+            if (kwInfo.getKeyword().getText().contains(filterString)) {
                 filteredResults.add(kwInfo);
             }
         }
